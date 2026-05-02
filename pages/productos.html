@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos - Inventario Básico</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body data-page="productos">
+
+  <header class="barra-superior">
+    <div>
+      <h1>Gestión de productos</h1>
+      <p>Listado general del inventario</p>
+    </div>
+
+    <nav class="menu-principal">
+      <a href="../index.html">Inicio</a>
+      <a href="productos.html" class="activo">Productos</a>
+      <a href="producto-form.html">Nuevo producto</a>
+      <a href="sesion.html">Sesión</a>
+    </nav>
+  </header>
+
+  <main class="contenedor">
+    <section class="tarjeta">
+      <div class="encabezado-seccion">
+        <div>
+          <h2>Productos registrados</h2>
+          <p>Desde esta vista se consultan, editan y eliminan los productos.</p>
+        </div>
+        <a href="producto-form.html" class="boton">Agregar producto</a>
+      </div>
+
+      <div class="filtros">
+        <label for="buscarProducto">Buscar por nombre o código:</label>
+        <input type="text" id="buscarProducto" placeholder="Ejemplo: P001 o Cuaderno">
+      </div>
+
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Cantidad</th>
+              <th>Precio</th>
+              <th>Subtotal</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaProductos"></tbody>
+        </table>
+      </div>
+
+      <p id="mensajeLista" class="mensaje"></p>
+    </section>
+  </main>
+
+  <script src="../js/app.js"></script>
+</body>
+</html>

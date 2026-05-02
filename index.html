@@ -6,96 +6,74 @@
   <title>Inventario Básico de Productos</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body data-page="inicio">
 
-  <header class="encabezado">
-    <h1>Inventario Básico de Productos</h1>
-    <p>Proyecto Final DTW135 - Avance 1</p>
+  <header class="barra-superior">
+    <div>
+      <h1>Inventario Básico</h1>
+      <p>Proyecto Final DTW135 - Avance 1</p>
+    </div>
+
+    <nav class="menu-principal">
+      <a href="index.html" class="activo">Inicio</a>
+      <a href="pages/productos.html">Productos</a>
+      <a href="pages/producto-form.html">Nuevo producto</a>
+      <a href="pages/sesion.html">Sesión</a>
+    </nav>
   </header>
 
-  <main class="contenedor-principal">
-
-    <section class="tarjeta">
-      <h2>Encargado del inventario</h2>
-
-      <label for="usuario">Nombre del encargado:</label>
-      <input type="text" id="usuario" placeholder="Ejemplo: Ana López">
-
-      <button id="guardarUsuarioBtn">Guardar encargado</button>
-
-      <p id="mostrarUsuario" class="texto-ayuda"></p>
-    </section>
-
-    <section class="tarjeta">
-      <h2>Opciones de sesión</h2>
-
-      <button id="temaBtn">Cambiar tema</button>
-      <button id="iniciarSesionBtn">Iniciar sesión</button>
-      <button id="cerrarSesionBtn">Cerrar sesión</button>
-
-      <p id="estadoSesion" class="texto-ayuda"></p>
-      <p id="ultimaAccion" class="texto-ayuda"></p>
-    </section>
-
-    <section class="tarjeta">
-      <h2>Formulario de productos</h2>
-
-      <label for="codigoInput">Código:</label>
-      <input type="text" id="codigoInput" placeholder="Ejemplo: P001">
-
-      <label for="productoInput">Nombre del producto:</label>
-      <input type="text" id="productoInput" placeholder="Ejemplo: Cuaderno">
-
-      <p class="contador">Caracteres del nombre: <span id="contador">0</span></p>
-
-      <label for="categoriaInput">Categoría:</label>
-      <select id="categoriaInput">
-        <option value="">Seleccione una categoría</option>
-        <option value="Alimentos">Alimentos</option>
-        <option value="Limpieza">Limpieza</option>
-        <option value="Tecnología">Tecnología</option>
-        <option value="Papelería">Papelería</option>
-        <option value="Otros">Otros</option>
-      </select>
-
-      <label for="cantidadInput">Cantidad:</label>
-      <input type="number" id="cantidadInput" placeholder="Ejemplo: 10" min="0">
-
-      <label for="precioInput">Precio unitario:</label>
-      <input type="number" id="precioInput" placeholder="Ejemplo: 1.50" min="0" step="0.01">
-
-      <div class="acciones-formulario">
-        <button id="agregarBtn">Agregar producto</button>
-        <button id="cancelarBtn" class="oculto">Cancelar edición</button>
+  <main class="contenedor">
+    <section class="hero">
+      <div>
+        <span class="etiqueta">Sistema de inventario</span>
+        <h2>Control básico de productos</h2>
+        <p>
+          Esta aplicación permite registrar productos, consultar el inventario,
+          actualizar información y eliminar registros guardados en el navegador.
+        </p>
       </div>
 
-      <p id="mensaje" class="mensaje"></p>
+      <div class="panel-usuario">
+        <p class="texto-pequeno">Encargado actual</p>
+        <strong id="nombreEncargado">No registrado</strong>
+        <p id="estadoSesion" class="texto-ayuda">Sesión cerrada</p>
+      </div>
+    </section>
+
+    <section class="resumen-grid">
+      <article class="tarjeta-resumen">
+        <p>Productos registrados</p>
+        <strong id="totalProductos">0</strong>
+      </article>
+
+      <article class="tarjeta-resumen">
+        <p>Unidades en stock</p>
+        <strong id="totalUnidades">0</strong>
+      </article>
+
+      <article class="tarjeta-resumen">
+        <p>Valor estimado</p>
+        <strong id="valorInventario">$0.00</strong>
+      </article>
     </section>
 
     <section class="tarjeta">
-      <h2>Resumen básico del inventario</h2>
+      <div class="encabezado-seccion">
+        <div>
+          <h2>Acciones principales</h2>
+          <p>Opciones separadas por módulos para trabajar de forma más ordenada.</p>
+        </div>
+      </div>
 
-      <div class="resumen">
-        <article class="dato">
-          <h3>Productos registrados</h3>
-          <p id="totalProductos">0</p>
-        </article>
-
-        <article class="dato">
-          <h3>Unidades en stock</h3>
-          <p id="totalUnidades">0</p>
-        </article>
-
-        <article class="dato">
-          <h3>Valor total</h3>
-          <p id="valorInventario">$0.00</p>
-        </article>
+      <div class="acciones-inicio">
+        <a class="boton" href="pages/productos.html">Ver productos</a>
+        <a class="boton secundario" href="pages/producto-form.html">Agregar producto</a>
+        <a class="boton claro" href="pages/sesion.html">Gestionar sesión</a>
       </div>
     </section>
 
     <section class="tarjeta">
-      <h2>Lista de productos</h2>
-
+      <h2>Últimos productos registrados</h2>
       <div class="tabla-contenedor">
         <table>
           <thead>
@@ -104,16 +82,12 @@
               <th>Producto</th>
               <th>Categoría</th>
               <th>Cantidad</th>
-              <th>Precio</th>
-              <th>Subtotal</th>
-              <th>Acciones</th>
             </tr>
           </thead>
-          <tbody id="tablaProductos"></tbody>
+          <tbody id="tablaUltimosProductos"></tbody>
         </table>
       </div>
     </section>
-
   </main>
 
   <script src="js/app.js"></script>

@@ -1,39 +1,40 @@
 # Avance 1 - Inventario básico de productos
 
-Este avance contiene la primera versión del sistema de inventario.
+## Tema
 
-## Alcance actual
+Inventario básico de productos.
 
-Se implementó un CRUD básico de productos:
+## Objetivo del avance
 
-- Crear productos.
+Crear una base inicial del proyecto usando únicamente los temas trabajados en
+clase hasta este momento: HTML, CSS, JavaScript, DOM, eventos, arreglos,
+objetos, localStorage, sessionStorage y cookies.
+
+## Estructura aplicada
+
+La aplicación se separó en vistas para evitar colocar todo el contenido en una
+sola pantalla:
+
+- Inicio: muestra un resumen general del inventario.
+- Productos: muestra la tabla de productos y las acciones de gestión.
+- Formulario de producto: permite agregar y editar productos.
+- Sesión: permite guardar el encargado, iniciar/cerrar sesión y cambiar tema.
+
+## Funcionalidades del avance
+
+- Agregar productos.
 - Listar productos.
 - Editar productos.
 - Eliminar productos.
-
-Cada producto contiene:
-
-- Código.
-- Nombre.
-- Categoría.
-- Cantidad.
-- Precio unitario.
-
-## Tecnologías utilizadas en este avance
-
-- HTML5.
-- CSS3.
-- JavaScript.
-- LocalStorage.
-- SessionStorage.
-- Cookies.
-
-## Archivos principales
-
-- `index.html`: estructura principal de la página.
-- `css/styles.css`: estilos básicos del proyecto.
-- `js/app.js`: lógica del inventario.
+- Buscar productos por código o nombre.
+- Mostrar total de productos, unidades y valor estimado.
+- Guardar productos en localStorage.
+- Guardar estado de sesión en sessionStorage.
+- Guardar encargado mediante cookie.
+- Cambiar tema usando localStorage.
 
 ## Pendiente
 
-Los demás requisitos del proyecto se dejan para próximos avances, para no adelantarse a temas que todavía no se están trabajando.
+Los requisitos más avanzados del proyecto se implementarán en próximos avances:
+Web Worker, consumo de API REST, geolocalización, dashboard avanzado y manejo
+más completo de errores.

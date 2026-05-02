@@ -1,11 +1,10 @@
 // Proyecto: Inventario básico de productos
-// Avance 1: HTML, CSS, JavaScript, DOM, eventos, arreglos, objetos,
-// localStorage, sessionStorage y cookies.
+// Avance 1 mejorado: estructura por vistas/páginas.
+// Se mantiene el estilo de las prácticas: objeto app, eventos, DOM,
+// arreglos, objetos, localStorage, sessionStorage y cookies.
 
-// Objeto principal del proyecto
 const app = {
   productos: [],
-  productoEditando: null,
 
   cargarProductos: function () {
     const datos = localStorage.getItem("productos");
@@ -20,10 +19,6 @@ const app = {
   },
 
   agregarProducto: function (codigo, nombre, categoria, cantidad, precio) {
-    if (!validarProducto(codigo, nombre, categoria, cantidad, precio)) {
-      return;
-    }
-
     const producto = {
       id: Date.now(),
       codigo: codigo,
@@ -35,54 +30,12 @@ const app = {
 
     this.productos.push(producto);
     this.guardarProductos();
-    this.render();
-
     sessionStorage.setItem("ultimaAccion", "Producto agregado");
-    mostrarUltimaAccion();
-
-    limpiarFormulario();
-    mostrarMensaje("");
   },
 
-  eliminarProducto: function (id) {
-    this.productos = this.productos.filter(function (producto) {
-      return producto.id !== id;
-    });
-
-    this.guardarProductos();
-    this.render();
-
-    sessionStorage.setItem("ultimaAccion", "Producto eliminado");
-    mostrarUltimaAccion();
-  },
-
-  editarProducto: function (id) {
-    const producto = this.productos.find(function (producto) {
-      return producto.id === id;
-    });
-
-    if (producto) {
-      document.getElementById("codigoInput").value = producto.codigo;
-      document.getElementById("productoInput").value = producto.nombre;
-      document.getElementById("categoriaInput").value = producto.categoria;
-      document.getElementById("cantidadInput").value = producto.cantidad;
-      document.getElementById("precioInput").value = producto.precio;
-      document.getElementById("contador").textContent = producto.nombre.length;
-
-      this.productoEditando = id;
-
-      document.getElementById("agregarBtn").textContent = "Actualizar producto";
-      document.getElementById("cancelarBtn").classList.remove("oculto");
-    }
-  },
-
-  actualizarProducto: function (codigo, nombre, categoria, cantidad, precio) {
-    if (!validarProducto(codigo, nombre, categoria, cantidad, precio)) {
-      return;
-    }
-
+  actualizarProducto: function (id, codigo, nombre, categoria, cantidad, precio) {
     this.productos = this.productos.map(function (producto) {
-      if (producto.id === app.productoEditando) {
+      if (producto.id === id) {
         producto.codigo = codigo;
         producto.nombre = nombre;
         producto.categoria = categoria;
@@ -93,15 +46,23 @@ const app = {
       return producto;
     });
 
-    this.productoEditando = null;
     this.guardarProductos();
-    this.render();
-
     sessionStorage.setItem("ultimaAccion", "Producto actualizado");
-    mostrarUltimaAccion();
+  },
 
-    limpiarFormulario();
-    mostrarMensaje("");
+  eliminarProducto: function (id) {
+    this.productos = this.productos.filter(function (producto) {
+      return producto.id !== id;
+    });
+
+    this.guardarProductos();
+    sessionStorage.setItem("ultimaAccion", "Producto eliminado");
+  },
+
+  buscarProducto: function (id) {
+    return this.productos.find(function (producto) {
+      return producto.id === id;
+    });
   },
 
   calcularTotalUnidades: function () {
@@ -122,135 +83,247 @@ const app = {
     });
 
     return total;
-  },
-
-  render: function () {
-    const tabla = document.getElementById("tablaProductos");
-    tabla.innerHTML = "";
-
-    if (this.productos.length === 0) {
-      const fila = document.createElement("tr");
-      const columna = document.createElement("td");
-
-      columna.textContent = "No hay productos registrados";
-      columna.colSpan = 7;
-      columna.classList.add("sin-productos");
-
-      fila.appendChild(columna);
-      tabla.appendChild(fila);
-    }
-
-    this.productos.forEach(function (producto) {
-      const fila = document.createElement("tr");
-
-      const codigo = document.createElement("td");
-      codigo.textContent = producto.codigo;
-
-      const nombre = document.createElement("td");
-      nombre.textContent = producto.nombre;
-
-      const categoria = document.createElement("td");
-      categoria.textContent = producto.categoria;
-
-      const cantidad = document.createElement("td");
-      cantidad.textContent = producto.cantidad;
-
-      if (producto.cantidad <= 5) {
-        cantidad.classList.add("stock-bajo");
-      }
-
-      const precio = document.createElement("td");
-      precio.textContent = "$" + producto.precio.toFixed(2);
-
-      const subtotal = document.createElement("td");
-      subtotal.textContent = "$" + (producto.cantidad * producto.precio).toFixed(2);
-
-      const acciones = document.createElement("td");
-
-      const botonEditar = document.createElement("button");
-      botonEditar.textContent = "Editar";
-      botonEditar.classList.add("editar");
-      botonEditar.setAttribute("data-id", producto.id);
-
-      const botonEliminar = document.createElement("button");
-      botonEliminar.textContent = "Eliminar";
-      botonEliminar.classList.add("eliminar");
-      botonEliminar.setAttribute("data-id", producto.id);
-
-      acciones.appendChild(botonEditar);
-      acciones.appendChild(botonEliminar);
-
-      fila.appendChild(codigo);
-      fila.appendChild(nombre);
-      fila.appendChild(categoria);
-      fila.appendChild(cantidad);
-      fila.appendChild(precio);
-      fila.appendChild(subtotal);
-      fila.appendChild(acciones);
-
-      tabla.appendChild(fila);
-    });
-
-    document.getElementById("totalProductos").textContent = this.productos.length;
-    document.getElementById("totalUnidades").textContent = this.calcularTotalUnidades();
-    document.getElementById("valorInventario").textContent = "$" + this.calcularValorInventario().toFixed(2);
   }
 };
 
-// Validaciones básicas del formulario
+// ===================== FUNCIONES DE PRODUCTOS =====================
+
 function validarProducto(codigo, nombre, categoria, cantidad, precio) {
   if (!codigo.trim()) {
-    mostrarMensaje("Ingrese el código del producto");
+    mostrarMensajeFormulario("Ingrese el código del producto");
     return false;
   }
 
   if (!nombre.trim()) {
-    mostrarMensaje("Ingrese el nombre del producto");
+    mostrarMensajeFormulario("Ingrese el nombre del producto");
     return false;
   }
 
   if (!categoria.trim()) {
-    mostrarMensaje("Seleccione una categoría");
+    mostrarMensajeFormulario("Seleccione una categoría");
     return false;
   }
 
   if (cantidad === "" || Number(cantidad) < 0 || isNaN(Number(cantidad))) {
-    mostrarMensaje("Ingrese una cantidad válida");
+    mostrarMensajeFormulario("Ingrese una cantidad válida");
     return false;
   }
 
   if (precio === "" || Number(precio) < 0 || isNaN(Number(precio))) {
-    mostrarMensaje("Ingrese un precio válido");
+    mostrarMensajeFormulario("Ingrese un precio válido");
     return false;
   }
 
   return true;
 }
 
-// Mostrar mensajes de validación
-function mostrarMensaje(texto) {
-  document.getElementById("mensaje").textContent = texto;
+function obtenerEstadoProducto(cantidad) {
+  if (cantidad === 0) {
+    return "Agotado";
+  }
+
+  if (cantidad <= 5) {
+    return "Stock bajo";
+  }
+
+  return "Disponible";
 }
 
-// Limpiar formulario
-function limpiarFormulario() {
+function obtenerClaseEstado(cantidad) {
+  if (cantidad === 0) {
+    return "agotado";
+  }
+
+  if (cantidad <= 5) {
+    return "bajo";
+  }
+
+  return "";
+}
+
+function mostrarMensajeFormulario(texto) {
+  const mensaje = document.getElementById("mensajeFormulario");
+
+  if (mensaje) {
+    mensaje.textContent = texto;
+  }
+}
+
+function limpiarFormularioProducto() {
   document.getElementById("codigoInput").value = "";
   document.getElementById("productoInput").value = "";
   document.getElementById("categoriaInput").value = "";
   document.getElementById("cantidadInput").value = "";
   document.getElementById("precioInput").value = "";
   document.getElementById("contador").textContent = "0";
+  mostrarMensajeFormulario("");
+  sessionStorage.removeItem("productoEditando");
+}
 
-  app.productoEditando = null;
+function cargarFormularioProducto() {
+  const idEditando = Number(sessionStorage.getItem("productoEditando"));
 
-  document.getElementById("agregarBtn").textContent = "Agregar producto";
-  document.getElementById("cancelarBtn").classList.add("oculto");
+  if (!idEditando) {
+    return;
+  }
+
+  const producto = app.buscarProducto(idEditando);
+
+  if (!producto) {
+    sessionStorage.removeItem("productoEditando");
+    return;
+  }
+
+  document.getElementById("tituloFormulario").textContent = "Editar producto";
+  document.getElementById("guardarProductoBtn").textContent = "Actualizar producto";
+
+  document.getElementById("codigoInput").value = producto.codigo;
+  document.getElementById("productoInput").value = producto.nombre;
+  document.getElementById("categoriaInput").value = producto.categoria;
+  document.getElementById("cantidadInput").value = producto.cantidad;
+  document.getElementById("precioInput").value = producto.precio;
+  document.getElementById("contador").textContent = producto.nombre.length;
+}
+
+function guardarDesdeFormulario(evento) {
+  evento.preventDefault();
+
+  const codigo = document.getElementById("codigoInput").value;
+  const nombre = document.getElementById("productoInput").value;
+  const categoria = document.getElementById("categoriaInput").value;
+  const cantidad = document.getElementById("cantidadInput").value;
+  const precio = document.getElementById("precioInput").value;
+
+  if (!validarProducto(codigo, nombre, categoria, cantidad, precio)) {
+    return;
+  }
+
+  const idEditando = Number(sessionStorage.getItem("productoEditando"));
+
+  if (idEditando) {
+    app.actualizarProducto(idEditando, codigo, nombre, categoria, cantidad, precio);
+    sessionStorage.removeItem("productoEditando");
+  } else {
+    app.agregarProducto(codigo, nombre, categoria, cantidad, precio);
+  }
+
+  window.location.href = "productos.html";
+}
+
+function renderTablaProductos(lista) {
+  const tabla = document.getElementById("tablaProductos");
+
+  if (!tabla) {
+    return;
+  }
+
+  tabla.innerHTML = "";
+
+  if (lista.length === 0) {
+    const fila = document.createElement("tr");
+    const columna = document.createElement("td");
+    columna.textContent = "No hay productos para mostrar";
+    columna.colSpan = 8;
+    columna.classList.add("sin-productos");
+    fila.appendChild(columna);
+    tabla.appendChild(fila);
+    return;
+  }
+
+  lista.forEach(function (producto) {
+    const fila = document.createElement("tr");
+    const subtotal = producto.cantidad * producto.precio;
+    const claseEstado = obtenerClaseEstado(producto.cantidad);
+
+    fila.innerHTML = `
+      <td>${producto.codigo}</td>
+      <td>${producto.nombre}</td>
+      <td>${producto.categoria}</td>
+      <td>${producto.cantidad}</td>
+      <td>$${producto.precio.toFixed(2)}</td>
+      <td>$${subtotal.toFixed(2)}</td>
+      <td><span class="estado-stock ${claseEstado}">${obtenerEstadoProducto(producto.cantidad)}</span></td>
+      <td>
+        <div class="acciones-tabla">
+          <button data-id="${producto.id}" class="editar">Editar</button>
+          <button data-id="${producto.id}" class="eliminar secundario">Eliminar</button>
+        </div>
+      </td>
+    `;
+
+    tabla.appendChild(fila);
+  });
+}
+
+function filtrarProductos() {
+  const busqueda = document.getElementById("buscarProducto").value.toLowerCase();
+
+  const filtrados = app.productos.filter(function (producto) {
+    return producto.nombre.toLowerCase().includes(busqueda) ||
+           producto.codigo.toLowerCase().includes(busqueda);
+  });
+
+  renderTablaProductos(filtrados);
+}
+
+function renderUltimosProductos() {
+  const tabla = document.getElementById("tablaUltimosProductos");
+
+  if (!tabla) {
+    return;
+  }
+
+  tabla.innerHTML = "";
+
+  const ultimos = app.productos.slice(-5).reverse();
+
+  if (ultimos.length === 0) {
+    const fila = document.createElement("tr");
+    const columna = document.createElement("td");
+    columna.textContent = "Aún no hay productos registrados";
+    columna.colSpan = 4;
+    columna.classList.add("sin-productos");
+    fila.appendChild(columna);
+    tabla.appendChild(fila);
+    return;
+  }
+
+  ultimos.forEach(function (producto) {
+    const fila = document.createElement("tr");
+
+    fila.innerHTML = `
+      <td>${producto.codigo}</td>
+      <td>${producto.nombre}</td>
+      <td>${producto.categoria}</td>
+      <td>${producto.cantidad}</td>
+    `;
+
+    tabla.appendChild(fila);
+  });
+}
+
+function renderResumen() {
+  const totalProductos = document.getElementById("totalProductos");
+  const totalUnidades = document.getElementById("totalUnidades");
+  const valorInventario = document.getElementById("valorInventario");
+
+  if (totalProductos) {
+    totalProductos.textContent = app.productos.length;
+  }
+
+  if (totalUnidades) {
+    totalUnidades.textContent = app.calcularTotalUnidades();
+  }
+
+  if (valorInventario) {
+    valorInventario.textContent = "$" + app.calcularValorInventario().toFixed(2);
+  }
 }
 
 // ===================== COOKIES =====================
 
 function guardarCookie() {
-  const usuario = document.getElementById("usuario").value;
+  const usuario = document.getElementById("usuarioInput").value;
 
   if (!usuario.trim()) {
     document.getElementById("mostrarUsuario").textContent = "Ingrese el nombre del encargado";
@@ -259,8 +332,7 @@ function guardarCookie() {
 
   const fecha = new Date();
   fecha.setTime(fecha.getTime() + (7 * 24 * 60 * 60 * 1000));
-
-  document.cookie = "usuario=" + usuario + "; expires=" + fecha.toUTCString();
+  document.cookie = "usuario=" + usuario + "; expires=" + fecha.toUTCString() + "; path=/";
 
   mostrarCookie();
 }
@@ -281,11 +353,15 @@ function obtenerCookie(nombre) {
 
 function mostrarCookie() {
   const usuario = obtenerCookie("usuario");
+  const mostrarUsuario = document.getElementById("mostrarUsuario");
+  const nombreEncargado = document.getElementById("nombreEncargado");
 
-  if (usuario) {
-    document.getElementById("mostrarUsuario").textContent = "Encargado: " + usuario;
-  } else {
-    document.getElementById("mostrarUsuario").textContent = "No hay encargado guardado";
+  if (mostrarUsuario) {
+    mostrarUsuario.textContent = usuario ? "Encargado guardado: " + usuario : "No hay encargado guardado";
+  }
+
+  if (nombreEncargado) {
+    nombreEncargado.textContent = usuario ? usuario : "No registrado";
   }
 }
 
@@ -325,77 +401,96 @@ function cerrarSesion() {
 
 function mostrarSesion() {
   const estado = sessionStorage.getItem("sesion");
+  const estadoSesion = document.getElementById("estadoSesion");
 
-  if (estado) {
-    document.getElementById("estadoSesion").textContent = "Sesión activa";
-  } else {
-    document.getElementById("estadoSesion").textContent = "Sesión cerrada";
+  if (estadoSesion) {
+    estadoSesion.textContent = estado ? "Sesión activa" : "Sesión cerrada";
   }
 }
 
 function mostrarUltimaAccion() {
   const accion = sessionStorage.getItem("ultimaAccion");
+  const ultimaAccion = document.getElementById("ultimaAccion");
 
-  if (accion) {
-    document.getElementById("ultimaAccion").textContent = "Última acción: " + accion;
-  } else {
-    document.getElementById("ultimaAccion").textContent = "Sin acciones recientes";
+  if (ultimaAccion) {
+    ultimaAccion.textContent = accion ? "Última acción: " + accion : "Sin acciones recientes";
   }
 }
 
-// ===================== EVENTOS =====================
+// ===================== EVENTOS POR VISTA =====================
 
-document.getElementById("guardarUsuarioBtn").addEventListener("click", guardarCookie);
-
-document.getElementById("temaBtn").addEventListener("click", cambiarTema);
-
-document.getElementById("iniciarSesionBtn").addEventListener("click", iniciarSesion);
-
-document.getElementById("cerrarSesionBtn").addEventListener("click", cerrarSesion);
-
-document.getElementById("agregarBtn").addEventListener("click", function () {
-  const codigo = document.getElementById("codigoInput").value;
-  const nombre = document.getElementById("productoInput").value;
-  const categoria = document.getElementById("categoriaInput").value;
-  const cantidad = document.getElementById("cantidadInput").value;
-  const precio = document.getElementById("precioInput").value;
-
-  if (app.productoEditando) {
-    app.actualizarProducto(codigo, nombre, categoria, cantidad, precio);
-  } else {
-    app.agregarProducto(codigo, nombre, categoria, cantidad, precio);
-  }
-});
-
-document.getElementById("cancelarBtn").addEventListener("click", function () {
-  limpiarFormulario();
-  mostrarMensaje("");
-});
-
-document.getElementById("productoInput").addEventListener("input", function (evento) {
-  document.getElementById("contador").textContent = evento.target.value.length;
-});
-
-// Delegación de eventos para editar y eliminar
-document.getElementById("tablaProductos").addEventListener("click", function (evento) {
-  const id = Number(evento.target.dataset.id);
-
-  if (evento.target.classList.contains("editar")) {
-    app.editarProducto(id);
-  }
-
-  if (evento.target.classList.contains("eliminar")) {
-    app.eliminarProducto(id);
-  }
-});
-
-// Inicialización del proyecto
-window.onload = function () {
+function iniciarVistaInicio() {
+  renderResumen();
+  renderUltimosProductos();
   mostrarCookie();
-  cargarTema();
+  mostrarSesion();
+}
+
+function iniciarVistaProductos() {
+  renderTablaProductos(app.productos);
+
+  document.getElementById("buscarProducto").addEventListener("input", filtrarProductos);
+
+  // Delegación de eventos en la tabla de productos.
+  document.getElementById("tablaProductos").addEventListener("click", function (evento) {
+    const id = Number(evento.target.dataset.id);
+
+    if (evento.target.classList.contains("editar")) {
+      sessionStorage.setItem("productoEditando", id);
+      window.location.href = "producto-form.html";
+    }
+
+    if (evento.target.classList.contains("eliminar")) {
+      app.eliminarProducto(id);
+      renderTablaProductos(app.productos);
+    }
+  });
+}
+
+function iniciarVistaFormulario() {
+  cargarFormularioProducto();
+
+  document.getElementById("formProducto").addEventListener("submit", guardarDesdeFormulario);
+
+  document.getElementById("limpiarBtn").addEventListener("click", limpiarFormularioProducto);
+
+  document.getElementById("productoInput").addEventListener("input", function (evento) {
+    document.getElementById("contador").textContent = evento.target.value.length;
+  });
+}
+
+function iniciarVistaSesion() {
+  mostrarCookie();
   mostrarSesion();
   mostrarUltimaAccion();
 
+  document.getElementById("guardarUsuarioBtn").addEventListener("click", guardarCookie);
+  document.getElementById("iniciarSesionBtn").addEventListener("click", iniciarSesion);
+  document.getElementById("cerrarSesionBtn").addEventListener("click", cerrarSesion);
+  document.getElementById("temaBtn").addEventListener("click", cambiarTema);
+}
+
+// ===================== INICIALIZACIÓN =====================
+
+window.onload = function () {
+  cargarTema();
   app.cargarProductos();
-  app.render();
+
+  const pagina = document.body.dataset.page;
+
+  if (pagina === "inicio") {
+    iniciarVistaInicio();
+  }
+
+  if (pagina === "productos") {
+    iniciarVistaProductos();
+  }
+
+  if (pagina === "formulario-producto") {
+    iniciarVistaFormulario();
+  }
+
+  if (pagina === "sesion") {
+    iniciarVistaSesion();
+  }
 };

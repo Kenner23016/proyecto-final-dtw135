@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sesión - Inventario Básico</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body data-page="sesion">
+
+  <header class="barra-superior">
+    <div>
+      <h1>Sesión y encargado</h1>
+      <p>Uso básico de cookies, localStorage y sessionStorage</p>
+    </div>
+
+    <nav class="menu-principal">
+      <a href="../index.html">Inicio</a>
+      <a href="productos.html">Productos</a>
+      <a href="producto-form.html">Nuevo producto</a>
+      <a href="sesion.html" class="activo">Sesión</a>
+    </nav>
+  </header>
+
+  <main class="contenedor contenedor-formulario">
+    <section class="tarjeta">
+      <h2>Encargado del inventario</h2>
+      <p class="texto-ayuda">
+        El nombre se guarda en una cookie, siguiendo la práctica de almacenamiento local.
+      </p>
+
+      <label for="usuarioInput">Nombre del encargado</label>
+      <input type="text" id="usuarioInput" placeholder="Ejemplo: Ana López">
+      <button id="guardarUsuarioBtn">Guardar encargado</button>
+      <p id="mostrarUsuario" class="texto-ayuda"></p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Estado de sesión</h2>
+      <p class="texto-ayuda">
+        Esta parte usa sessionStorage para simular una sesión activa o cerrada.
+      </p>
+
+      <button id="iniciarSesionBtn">Iniciar sesión</button>
+      <button id="cerrarSesionBtn" class="secundario">Cerrar sesión</button>
+      <p id="estadoSesion" class="texto-ayuda"></p>
+      <p id="ultimaAccion" class="texto-ayuda"></p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Preferencias</h2>
+      <p class="texto-ayuda">
+        El tema visual se guarda en localStorage.
+      </p>
+
+      <button id="temaBtn">Cambiar tema</button>
+    </section>
+  </main>
+
+  <script src="../js/app.js"></script>
+</body>
+</html>
