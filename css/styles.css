@@ -1,0 +1,181 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f2f2f2;
+  color: #222;
+}
+
+body.dark {
+  background-color: #222;
+  color: #fff;
+}
+
+.encabezado {
+  background-color: #1f3c88;
+  color: #fff;
+  padding: 25px;
+  text-align: center;
+}
+
+.encabezado h1 {
+  margin: 0 0 8px 0;
+}
+
+.encabezado p {
+  margin: 0;
+}
+
+.contenedor-principal {
+  width: 90%;
+  max-width: 1100px;
+  margin: 25px auto;
+}
+
+.tarjeta {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+body.dark .tarjeta {
+  background-color: #333;
+  border-color: #555;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+input,
+select {
+  width: 100%;
+  max-width: 350px;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 10px 5px 0 0;
+  border: none;
+  border-radius: 4px;
+  background-color: #1f3c88;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #162b63;
+}
+
+.acciones-formulario {
+  margin-top: 10px;
+}
+
+.oculto {
+  display: none;
+}
+
+.mensaje {
+  color: #b00020;
+  font-weight: bold;
+}
+
+.texto-ayuda,
+.contador {
+  color: #555;
+  font-size: 14px;
+}
+
+body.dark .texto-ayuda,
+body.dark .contador {
+  color: #ddd;
+}
+
+.resumen {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.dato {
+  border: 1px solid #ccc;
+  padding: 15px;
+  min-width: 180px;
+  background-color: #fafafa;
+  border-radius: 5px;
+}
+
+body.dark .dato {
+  background-color: #444;
+  border-color: #666;
+}
+
+.dato h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.dato p {
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+body.dark table {
+  background-color: #333;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+body.dark th,
+body.dark td {
+  border-color: #555;
+}
+
+th {
+  background-color: #e9e9e9;
+}
+
+body.dark th {
+  background-color: #444;
+}
+
+.stock-bajo {
+  color: #b00020;
+  font-weight: bold;
+}
+
+.sin-productos {
+  text-align: center;
+  color: #666;
+}
