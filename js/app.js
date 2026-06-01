@@ -9,8 +9,18 @@ const app = {
   cargarProductos: function () {
     const datos = localStorage.getItem("productos");
 
-    if (datos) {
-      this.productos = JSON.parse(datos);
+    if (!datos) {
+      this.productos = [];
+      return;
+    }
+
+    try {
+      const productosGuardados = JSON.parse(datos);
+      this.productos = Array.isArray(productosGuardados) ? productosGuardados : [];
+    } catch (error) {
+      this.productos = [];
+      localStorage.removeItem("productos");
+      sessionStorage.setItem("ultimaAccion", "Se reiniciaron datos dañados del inventario");
     }
   },
 
@@ -65,6 +75,15 @@ const app = {
     });
   },
 
+  existeCodigo: function (codigo, idActual) {
+    const codigoNormalizado = codigo.trim().toLowerCase();
+
+    return this.productos.some(function (producto) {
+      return producto.codigo.trim().toLowerCase() === codigoNormalizado &&
+             producto.id !== idActual;
+    });
+  },
+
   calcularTotalUnidades: function () {
     let total = 0;
 
@@ -86,11 +105,22 @@ const app = {
   }
 };
 
+const usuarioSimulado = {
+  usuario: "admin",
+  clave: "1234",
+  nombre: "Administrador"
+};
+
 // ===================== FUNCIONES DE PRODUCTOS =====================
 
-function validarProducto(codigo, nombre, categoria, cantidad, precio) {
+function validarProducto(codigo, nombre, categoria, cantidad, precio, idActual) {
   if (!codigo.trim()) {
     mostrarMensajeFormulario("Ingrese el código del producto");
+    return false;
+  }
+
+  if (app.existeCodigo(codigo, idActual)) {
+    mostrarMensajeFormulario("Ya existe un producto con ese código");
     return false;
   }
 
@@ -193,12 +223,11 @@ function guardarDesdeFormulario(evento) {
   const categoria = document.getElementById("categoriaInput").value;
   const cantidad = document.getElementById("cantidadInput").value;
   const precio = document.getElementById("precioInput").value;
+  const idEditando = Number(sessionStorage.getItem("productoEditando"));
 
-  if (!validarProducto(codigo, nombre, categoria, cantidad, precio)) {
+  if (!validarProducto(codigo, nombre, categoria, cantidad, precio, idEditando)) {
     return;
   }
-
-  const idEditando = Number(sessionStorage.getItem("productoEditando"));
 
   if (idEditando) {
     app.actualizarProducto(idEditando, codigo, nombre, categoria, cantidad, precio);
@@ -217,7 +246,7 @@ function renderTablaProductos(lista) {
     return;
   }
 
-  tabla.innerHTML = "";
+  tabla.textContent = "";
 
   if (lista.length === 0) {
     const fila = document.createElement("tr");
@@ -235,24 +264,51 @@ function renderTablaProductos(lista) {
     const subtotal = producto.cantidad * producto.precio;
     const claseEstado = obtenerClaseEstado(producto.cantidad);
 
-    fila.innerHTML = `
-      <td>${producto.codigo}</td>
-      <td>${producto.nombre}</td>
-      <td>${producto.categoria}</td>
-      <td>${producto.cantidad}</td>
-      <td>$${producto.precio.toFixed(2)}</td>
-      <td>$${subtotal.toFixed(2)}</td>
-      <td><span class="estado-stock ${claseEstado}">${obtenerEstadoProducto(producto.cantidad)}</span></td>
-      <td>
-        <div class="acciones-tabla">
-          <button data-id="${producto.id}" class="editar">Editar</button>
-          <button data-id="${producto.id}" class="eliminar secundario">Eliminar</button>
-        </div>
-      </td>
-    `;
+    agregarCeldaTexto(fila, producto.codigo);
+    agregarCeldaTexto(fila, producto.nombre);
+    agregarCeldaTexto(fila, producto.categoria);
+    agregarCeldaTexto(fila, producto.cantidad);
+    agregarCeldaTexto(fila, "$" + producto.precio.toFixed(2));
+    agregarCeldaTexto(fila, "$" + subtotal.toFixed(2));
+
+    const celdaEstado = document.createElement("td");
+    const estado = document.createElement("span");
+    estado.classList.add("estado-stock");
+
+    if (claseEstado) {
+      estado.classList.add(claseEstado);
+    }
+
+    estado.textContent = obtenerEstadoProducto(producto.cantidad);
+    celdaEstado.appendChild(estado);
+    fila.appendChild(celdaEstado);
+
+    const celdaAcciones = document.createElement("td");
+    const acciones = document.createElement("div");
+    const editarBtn = document.createElement("button");
+    const eliminarBtn = document.createElement("button");
+
+    acciones.classList.add("acciones-tabla");
+    editarBtn.textContent = "Editar";
+    editarBtn.dataset.id = producto.id;
+    editarBtn.classList.add("editar");
+    eliminarBtn.textContent = "Eliminar";
+    eliminarBtn.dataset.id = producto.id;
+    eliminarBtn.classList.add("eliminar", "secundario");
+
+    acciones.appendChild(editarBtn);
+    acciones.appendChild(eliminarBtn);
+    celdaAcciones.appendChild(acciones);
+    fila.appendChild(celdaAcciones);
 
     tabla.appendChild(fila);
   });
+}
+
+function agregarCeldaTexto(fila, texto) {
+  const celda = document.createElement("td");
+  celda.textContent = texto;
+  fila.appendChild(celda);
 }
 
 function filtrarProductos() {
@@ -273,7 +329,7 @@ function renderUltimosProductos() {
     return;
   }
 
-  tabla.innerHTML = "";
+  tabla.textContent = "";
 
   const ultimos = app.productos.slice(-5).reverse();
 
@@ -291,12 +347,10 @@ function renderUltimosProductos() {
   ultimos.forEach(function (producto) {
     const fila = document.createElement("tr");
 
-    fila.innerHTML = `
-      <td>${producto.codigo}</td>
-      <td>${producto.nombre}</td>
-      <td>${producto.categoria}</td>
-      <td>${producto.cantidad}</td>
-    `;
+    agregarCeldaTexto(fila, producto.codigo);
+    agregarCeldaTexto(fila, producto.nombre);
+    agregarCeldaTexto(fila, producto.categoria);
+    agregarCeldaTexto(fila, producto.cantidad);
 
     tabla.appendChild(fila);
   });
@@ -332,7 +386,7 @@ function guardarCookie() {
 
   const fecha = new Date();
   fecha.setTime(fecha.getTime() + (7 * 24 * 60 * 60 * 1000));
-  document.cookie = "usuario=" + usuario + "; expires=" + fecha.toUTCString() + "; path=/";
+  document.cookie = "usuario=" + encodeURIComponent(usuario) + "; expires=" + fecha.toUTCString() + "; path=/";
 
   mostrarCookie();
 }
@@ -344,7 +398,7 @@ function obtenerCookie(nombre) {
     const partes = cookie.trim().split("=");
 
     if (partes[0] === nombre) {
-      return partes[1];
+      return decodeURIComponent(partes[1]);
     }
   }
 
@@ -353,6 +407,7 @@ function obtenerCookie(nombre) {
 
 function mostrarCookie() {
   const usuario = obtenerCookie("usuario");
+  const usuarioActivo = sessionStorage.getItem("usuarioActivo") || "Usuario";
   const mostrarUsuario = document.getElementById("mostrarUsuario");
   const nombreEncargado = document.getElementById("nombreEncargado");
 
@@ -361,8 +416,135 @@ function mostrarCookie() {
   }
 
   if (nombreEncargado) {
-    nombreEncargado.textContent = usuario ? usuario : "No registrado";
+    nombreEncargado.textContent = usuario ? usuario : usuarioActivo || "No registrado";
   }
+}
+
+function renderSaludoDashboard() {
+  const saludo = document.getElementById("saludoUsuario");
+
+  if (!saludo) {
+    return;
+  }
+
+  const usuario = sessionStorage.getItem("usuarioActivo") || obtenerCookie("usuario") || "usuario";
+  saludo.textContent = "Hola, " + usuario;
+}
+
+function obtenerTotalesPorCategoria() {
+  const totales = {};
+
+  app.productos.forEach(function (producto) {
+    if (!totales[producto.categoria]) {
+      totales[producto.categoria] = 0;
+    }
+
+    totales[producto.categoria] += producto.cantidad;
+  });
+
+  return totales;
+}
+
+function renderGraficoStock() {
+  const canvas = document.getElementById("stockChart");
+
+  if (!canvas) {
+    return;
+  }
+
+  const contexto = canvas.getContext("2d");
+  const ancho = canvas.width;
+  const alto = canvas.height;
+  const totales = obtenerTotalesPorCategoria();
+  const categorias = Object.keys(totales);
+
+  contexto.clearRect(0, 0, ancho, alto);
+  contexto.font = "14px Arial";
+  contexto.fillStyle = "#666";
+
+  if (categorias.length === 0) {
+    contexto.fillText("No hay datos suficientes para mostrar el gráfico.", 32, alto / 2);
+    return;
+  }
+
+  const margenIzquierdo = 42;
+  const margenInferior = 48;
+  const margenSuperior = 24;
+  const espacioDisponible = ancho - margenIzquierdo - 24;
+  const altoDisponible = alto - margenSuperior - margenInferior;
+  const maximo = Math.max.apply(null, categorias.map(function (categoria) {
+    return totales[categoria];
+  }));
+  const anchoBarra = Math.max(32, espacioDisponible / categorias.length - 18);
+
+  contexto.strokeStyle = "#d7dce2";
+  contexto.beginPath();
+  contexto.moveTo(margenIzquierdo, margenSuperior);
+  contexto.lineTo(margenIzquierdo, alto - margenInferior);
+  contexto.lineTo(ancho - 18, alto - margenInferior);
+  contexto.stroke();
+
+  categorias.forEach(function (categoria, indice) {
+    const valor = totales[categoria];
+    const altoBarra = (valor / maximo) * altoDisponible;
+    const x = margenIzquierdo + 18 + indice * (anchoBarra + 18);
+    const y = alto - margenInferior - altoBarra;
+
+    contexto.fillStyle = indice % 2 === 0 ? "#183153" : "#244c7c";
+    contexto.fillRect(x, y, anchoBarra, altoBarra);
+
+    contexto.fillStyle = "#183153";
+    contexto.font = "bold 13px Arial";
+    contexto.fillText(valor, x, y - 8);
+
+    contexto.fillStyle = "#666";
+    contexto.font = "12px Arial";
+    contexto.fillText(categoria.slice(0, 12), x, alto - 22);
+  });
+}
+
+function renderActividadReciente() {
+  const contenedor = document.getElementById("actividadReciente");
+
+  if (!contenedor) {
+    return;
+  }
+
+  contenedor.textContent = "";
+
+  const ultimaAccion = sessionStorage.getItem("ultimaAccion") || "Sin acciones recientes";
+  const productosBajoStock = app.productos.filter(function (producto) {
+    return producto.cantidad <= 5;
+  }).length;
+  const ultimoProducto = app.productos[app.productos.length - 1];
+  const actividades = [
+    {
+      titulo: "Última acción",
+      texto: ultimaAccion
+    },
+    {
+      titulo: "Alertas de stock",
+      texto: productosBajoStock + " producto(s) con stock bajo o agotado"
+    },
+    {
+      titulo: "Registro reciente",
+      texto: ultimoProducto ? ultimoProducto.nombre + " (" + ultimoProducto.codigo + ")" : "Aún no hay productos registrados"
+    }
+  ];
+
+  actividades.forEach(function (actividad) {
+    const item = document.createElement("div");
+    const titulo = document.createElement("strong");
+    const texto = document.createElement("p");
+
+    item.classList.add("actividad-item");
+    titulo.textContent = actividad.titulo;
+    texto.textContent = actividad.texto;
+
+    item.appendChild(titulo);
+    item.appendChild(texto);
+    contenedor.appendChild(item);
+  });
 }
 
 // ===================== LOCAL STORAGE =====================
@@ -389,23 +571,118 @@ function cargarTema() {
 
 // ===================== SESSION STORAGE =====================
 
-function iniciarSesion() {
+function sesionActiva() {
+  return sessionStorage.getItem("sesion") === "activa";
+}
+
+function obtenerRutaLogin() {
+  const estaEnPages = window.location.pathname.includes("/pages/");
+  return estaEnPages ? "../login.html" : "login.html";
+}
+
+function obtenerRutaInicio() {
+  const estaEnPages = window.location.pathname.includes("/pages/");
+  return estaEnPages ? "../index.html" : "index.html";
+}
+
+function guardarUsuarioEnCookie(nombre) {
+  const fecha = new Date();
+  fecha.setTime(fecha.getTime() + (7 * 24 * 60 * 60 * 1000));
+  document.cookie = "usuario=" + encodeURIComponent(nombre) + "; expires=" + fecha.toUTCString() + "; path=/";
+}
+
+function iniciarSesion(nombre) {
   sessionStorage.setItem("sesion", "activa");
+  sessionStorage.setItem("usuarioActivo", nombre);
   mostrarSesion();
 }
 
 function cerrarSesion() {
   sessionStorage.removeItem("sesion");
+  sessionStorage.removeItem("usuarioActivo");
+  sessionStorage.removeItem("productoEditando");
   mostrarSesion();
+  window.location.href = obtenerRutaLogin();
+}
+
+function validarAcceso(pagina) {
+  if (pagina === "login") {
+    if (sesionActiva()) {
+      window.location.href = obtenerRutaInicio();
+      return false;
+    }
+
+    return true;
+  }
+
+  if (!sesionActiva()) {
+    window.location.href = obtenerRutaLogin();
+    return false;
+  }
+
+  return true;
 }
 
 function mostrarSesion() {
-  const estado = sessionStorage.getItem("sesion");
+  const estado = sesionActiva();
+  const usuarioActivo = sessionStorage.getItem("usuarioActivo");
   const estadoSesion = document.getElementById("estadoSesion");
 
   if (estadoSesion) {
-    estadoSesion.textContent = estado ? "Sesión activa" : "Sesión cerrada";
+    estadoSesion.textContent = estado ? "Sesión activa: " + usuarioActivo : "Sesión cerrada";
   }
+}
+
+function mostrarMensajeLogin(texto) {
+  const mensaje = document.getElementById("mensajeLogin");
+
+  if (mensaje) {
+    mensaje.textContent = texto;
+  }
+}
+
+function validarLogin(evento) {
+  evento.preventDefault();
+
+  const usuario = document.getElementById("loginUsuario").value.trim();
+  const clave = document.getElementById("loginClave").value.trim();
+
+  if (!usuario || !clave) {
+    mostrarMensajeLogin("Ingrese usuario y contraseña");
+    return;
+  }
+
+  if (usuario !== usuarioSimulado.usuario || clave !== usuarioSimulado.clave) {
+    mostrarMensajeLogin("Usuario o contraseña incorrectos");
+    return;
+  }
+
+  iniciarSesion(usuarioSimulado.nombre);
+  guardarUsuarioEnCookie(usuarioSimulado.nombre);
+  window.location.href = "index.html";
+}
+
+function configurarBotonesCerrarSesion() {
+  const botones = document.querySelectorAll(".cerrar-sesion-btn");
+
+  botones.forEach(function (boton) {
+    boton.addEventListener("click", cerrarSesion);
+  });
+}
+
+function configurarSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const boton = document.getElementById("sidebarToggle");
+
+  if (!sidebar || !boton) {
+    return;
+  }
+
+  boton.addEventListener("click", function () {
+    const estaColapsado = sidebar.classList.toggle("colapsado");
+    document.body.classList.toggle("sidebar-colapsado", estaColapsado);
+    boton.setAttribute("aria-expanded", String(!estaColapsado));
+  });
 }
 
 function mostrarUltimaAccion() {
@@ -419,15 +696,24 @@ function mostrarUltimaAccion() {
 
 // ===================== EVENTOS POR VISTA =====================
 
+function iniciarVistaLogin() {
+  document.getElementById("formLogin").addEventListener("submit", validarLogin);
+}
+
 function iniciarVistaInicio() {
+  renderSaludoDashboard();
   renderResumen();
   renderUltimosProductos();
+  renderGraficoStock();
+  renderActividadReciente();
   mostrarCookie();
   mostrarSesion();
+  configurarBotonesCerrarSesion();
 }
 
 function iniciarVistaProductos() {
   renderTablaProductos(app.productos);
+  configurarBotonesCerrarSesion();
 
   document.getElementById("buscarProducto").addEventListener("input", filtrarProductos);
 
@@ -441,6 +727,12 @@ function iniciarVistaProductos() {
     }
 
     if (evento.target.classList.contains("eliminar")) {
+      const confirmar = confirm("¿Desea eliminar este producto?");
+
+      if (!confirmar) {
+        return;
+      }
+
       app.eliminarProducto(id);
       renderTablaProductos(app.productos);
     }
@@ -449,6 +741,7 @@ function iniciarVistaProductos() {
 
 function iniciarVistaFormulario() {
   cargarFormularioProducto();
+  configurarBotonesCerrarSesion();
 
   document.getElementById("formProducto").addEventListener("submit", guardarDesdeFormulario);
 
@@ -463,9 +756,9 @@ function iniciarVistaSesion() {
   mostrarCookie();
   mostrarSesion();
   mostrarUltimaAccion();
+  configurarBotonesCerrarSesion();
 
   document.getElementById("guardarUsuarioBtn").addEventListener("click", guardarCookie);
-  document.getElementById("iniciarSesionBtn").addEventListener("click", iniciarSesion);
   document.getElementById("cerrarSesionBtn").addEventListener("click", cerrarSesion);
   document.getElementById("temaBtn").addEventListener("click", cambiarTema);
 }
@@ -474,9 +767,19 @@ function iniciarVistaSesion() {
 
 window.onload = function () {
   cargarTema();
-  app.cargarProductos();
 
   const pagina = document.body.dataset.page;
+
+  if (!validarAcceso(pagina)) {
+    return;
+  }
+
+  app.cargarProductos();
+  configurarSidebar();
+
+  if (pagina === "login") {
+    iniciarVistaLogin();
+  }
 
   if (pagina === "inicio") {
     iniciarVistaInicio();

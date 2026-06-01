@@ -6,74 +6,101 @@
   <title>Inventario Básico de Productos</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body data-page="inicio">
+<body data-page="inicio" class="app-layout">
 
-  <header class="barra-superior">
-    <div>
-      <h1>Inventario Básico</h1>
-      <p>Proyecto Final DTW135 - Avance 1</p>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-superior">
+      <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir o cerrar menú" aria-expanded="true">&lt;</button>
+    </div>
+
+    <div class="sidebar-branding">
+      <div class="sidebar-marca">
+        <h1>StockFlow</h1>
+        <p>Sistema de Gestión de Inventario</p>
+      </div>
     </div>
 
     <nav class="menu-principal">
-      <a href="index.html" class="activo">Inicio</a>
-      <a href="pages/productos.html">Productos</a>
+      <a href="index.html" class="activo">Home</a>
       <a href="pages/producto-form.html">Nuevo producto</a>
-      <a href="pages/sesion.html">Sesión</a>
+      <a href="pages/productos.html">Productos</a>
     </nav>
-  </header>
 
-  <main class="contenedor">
-    <section class="hero">
+    <button type="button" class="cerrar-sesion-btn sidebar-logout">Cerrar sesión</button>
+  </aside>
+
+  <main class="contenedor dashboard">
+    <section class="dashboard-header">
       <div>
-        <span class="etiqueta">Sistema de inventario</span>
-        <h2>Control básico de productos</h2>
-        <p>
-          Esta aplicación permite registrar productos, consultar el inventario,
-          actualizar información y eliminar registros guardados en el navegador.
-        </p>
+        <span class="etiqueta">Panel administrativo</span>
+        <h2 id="saludoUsuario">Hola, bienvenido</h2>
+        <p>Resumen general del inventario y actividad reciente.</p>
       </div>
 
-      <div class="panel-usuario">
-        <p class="texto-pequeno">Encargado actual</p>
+      <div class="panel-usuario panel-usuario-compacto">
+        <p class="texto-pequeno">Usuario activo</p>
         <strong id="nombreEncargado">No registrado</strong>
         <p id="estadoSesion" class="texto-ayuda">Sesión cerrada</p>
       </div>
     </section>
 
-    <section class="resumen-grid">
-      <article class="tarjeta-resumen">
-        <p>Productos registrados</p>
-        <strong id="totalProductos">0</strong>
+    <section class="resumen-grid metricas-grid">
+      <article class="tarjeta-resumen metrica-card">
+        <span class="metrica-icono">#</span>
+        <div>
+          <p>Productos registrados</p>
+          <strong id="totalProductos">0</strong>
+        </div>
       </article>
 
-      <article class="tarjeta-resumen">
-        <p>Unidades en stock</p>
-        <strong id="totalUnidades">0</strong>
+      <article class="tarjeta-resumen metrica-card">
+        <span class="metrica-icono">+</span>
+        <div>
+          <p>Unidades en stock</p>
+          <strong id="totalUnidades">0</strong>
+        </div>
       </article>
 
-      <article class="tarjeta-resumen">
-        <p>Valor estimado</p>
-        <strong id="valorInventario">$0.00</strong>
+      <article class="tarjeta-resumen metrica-card">
+        <span class="metrica-icono">$</span>
+        <div>
+          <p>Valor estimado</p>
+          <strong id="valorInventario">$0.00</strong>
+        </div>
       </article>
     </section>
 
-    <section class="tarjeta">
-      <div class="encabezado-seccion">
+    <section class="dashboard-grid">
+      <article class="tarjeta dashboard-card chart-card">
+        <div class="encabezado-seccion compacto">
+          <div>
+            <h2>Stock por categoría</h2>
+            <p>Distribución de unidades registradas.</p>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="stockChart" width="680" height="280"></canvas>
+        </div>
+      </article>
+
+      <article class="tarjeta dashboard-card">
+        <div class="encabezado-seccion compacto">
+          <div>
+            <h2>Actividad reciente</h2>
+            <p>Últimos movimientos del inventario.</p>
+          </div>
+        </div>
+        <div id="actividadReciente" class="actividad-lista"></div>
+      </article>
+    </section>
+
+    <section class="tarjeta dashboard-card">
+      <div class="encabezado-seccion compacto">
         <div>
-          <h2>Acciones principales</h2>
-          <p>Opciones separadas por módulos para trabajar de forma más ordenada.</p>
+          <h2>Últimos productos registrados</h2>
+          <p>Vista rápida de los registros más recientes.</p>
         </div>
       </div>
-
-      <div class="acciones-inicio">
-        <a class="boton" href="pages/productos.html">Ver productos</a>
-        <a class="boton secundario" href="pages/producto-form.html">Agregar producto</a>
-        <a class="boton claro" href="pages/sesion.html">Gestionar sesión</a>
-      </div>
-    </section>
-
-    <section class="tarjeta">
-      <h2>Últimos productos registrados</h2>
       <div class="tabla-contenedor">
         <table>
           <thead>

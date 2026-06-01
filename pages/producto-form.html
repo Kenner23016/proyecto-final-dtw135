@@ -6,25 +6,32 @@
   <title>Formulario de Producto - Inventario Básico</title>
   <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-page="formulario-producto">
+<body data-page="formulario-producto" class="app-layout">
 
-  <header class="barra-superior">
-    <div>
-      <h1 id="tituloFormulario">Nuevo producto</h1>
-      <p>Registro y actualización de productos</p>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-superior">
+      <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir o cerrar menú" aria-expanded="true">&lt;</button>
+    </div>
+
+    <div class="sidebar-branding">
+      <div class="sidebar-marca">
+        <h1>StockFlow</h1>
+        <p>Sistema de Gestión de Inventario</p>
+      </div>
     </div>
 
     <nav class="menu-principal">
-      <a href="../index.html">Inicio</a>
-      <a href="productos.html">Productos</a>
+      <a href="../index.html">Home</a>
       <a href="producto-form.html" class="activo">Nuevo producto</a>
-      <a href="sesion.html">Sesión</a>
+      <a href="productos.html">Productos</a>
     </nav>
-  </header>
+
+    <button type="button" class="cerrar-sesion-btn sidebar-logout">Cerrar sesión</button>
+  </aside>
 
   <main class="contenedor contenedor-formulario">
     <section class="tarjeta">
-      <h2>Datos del producto</h2>
+      <h2 id="tituloFormulario">Nuevo producto</h2>
       <p class="texto-ayuda">
         Complete la información solicitada. Los datos se guardan en localStorage.
       </p>

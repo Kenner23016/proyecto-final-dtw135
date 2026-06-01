@@ -6,21 +6,28 @@
   <title>Productos - Inventario Básico</title>
   <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-page="productos">
+<body data-page="productos" class="app-layout">
 
-  <header class="barra-superior">
-    <div>
-      <h1>Gestión de productos</h1>
-      <p>Listado general del inventario</p>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-superior">
+      <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir o cerrar menú" aria-expanded="true">&lt;</button>
+    </div>
+
+    <div class="sidebar-branding">
+      <div class="sidebar-marca">
+        <h1>StockFlow</h1>
+        <p>Sistema de Gestión de Inventario</p>
+      </div>
     </div>
 
     <nav class="menu-principal">
-      <a href="../index.html">Inicio</a>
-      <a href="productos.html" class="activo">Productos</a>
+      <a href="../index.html">Home</a>
       <a href="producto-form.html">Nuevo producto</a>
-      <a href="sesion.html">Sesión</a>
+      <a href="productos.html" class="activo">Productos</a>
     </nav>
-  </header>
+
+    <button type="button" class="cerrar-sesion-btn sidebar-logout">Cerrar sesión</button>
+  </aside>
 
   <main class="contenedor">
     <section class="tarjeta">
