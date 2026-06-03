@@ -37,10 +37,21 @@
         <p>Resumen general del inventario y actividad reciente.</p>
       </div>
 
-      <div class="panel-usuario panel-usuario-compacto">
-        <p class="texto-pequeno">Usuario activo</p>
-        <strong id="nombreEncargado">No registrado</strong>
+      <div class="estado-sistema-card">
+        <h3>Estado del sistema</h3>
+        <div class="estado-sistema-lista">
+          <p><span>👤</span> Usuario activo: <strong id="nombreEncargado">No registrado</strong></p>
+          <p><span>📍</span> Ubicación: <strong id="ubicacionResumen">Solicitando permiso...</strong></p>
+          <p><span>🌤️</span> Clima: <strong id="climaResumen">Esperando coordenadas...</strong></p>
+        </div>
         <p id="estadoSesion" class="texto-ayuda">Sesión cerrada</p>
+        <p id="ubicacionEstado" class="texto-ayuda dato-oculto">Pendiente</p>
+        <p id="climaEstado" class="texto-ayuda dato-oculto">Pendiente</p>
+        <span id="latitudActual" class="dato-oculto">Pendiente</span>
+        <span id="longitudActual" class="dato-oculto">Pendiente</span>
+        <span id="temperaturaActual" class="dato-oculto">Pendiente</span>
+        <span id="estadoClimaActual" class="dato-oculto">Pendiente</span>
+        <span id="vientoActual" class="dato-oculto">Pendiente</span>
       </div>
     </section>
 

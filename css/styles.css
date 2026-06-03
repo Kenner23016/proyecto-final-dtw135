@@ -270,17 +270,55 @@ body.dark .login-tarjeta h1 {
   color: #555;
 }
 
-.panel-usuario-compacto {
-  min-width: 220px;
-  border-radius: 14px;
-  box-shadow: none;
+.estado-sistema-card {
+  min-width: 320px;
+  max-width: 430px;
+  border: 1px solid #d7dce2;
+  border-radius: 16px;
+  padding: 14px 16px;
+  background-color: #f7f9fc;
+}
+
+.estado-sistema-card h3 {
+  margin: 0 0 10px 0;
+  color: #183153;
+  font-size: 15px;
+}
+
+.estado-sistema-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.estado-sistema-lista p {
+  margin: 0;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.estado-sistema-lista span {
+  display: inline-block;
+  width: 22px;
+}
+
+.estado-sistema-lista strong {
+  color: #183153;
+  font-weight: bold;
+}
+
+.estado-sistema-card > .texto-ayuda {
+  margin: 9px 0 0 0;
+  font-size: 12px;
 }
 
 body.dark .hero,
 body.dark .dashboard-header,
 body.dark .tarjeta,
 body.dark .tarjeta-resumen,
-body.dark .panel-usuario {
+body.dark .panel-usuario,
+body.dark .estado-sistema-card {
   background-color: #2d2d2d;
   border-color: #555;
 }
@@ -390,6 +428,10 @@ body.dark .contador {
   gap: 18px;
 }
 
+.dato-oculto {
+  display: none;
+}
+
 .encabezado-seccion.compacto {
   margin-bottom: 14px;
 }
@@ -453,6 +495,15 @@ body.dark .actividad-item {
 
 body.dark .actividad-item strong {
   color: #fff;
+}
+
+body.dark .estado-sistema-card h3,
+body.dark .estado-sistema-lista strong {
+  color: #fff;
+}
+
+body.dark .estado-sistema-lista p {
+  color: #ddd;
 }
 
 body.dark .tarjeta-resumen strong {
@@ -662,7 +713,10 @@ body.dark th {
     padding: 18px;
   }
 
-  .panel-usuario-compacto {
+  .estado-sistema-card {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
     margin-top: 16px;
   }
 

@@ -547,6 +547,117 @@ function renderActividadReciente() {
   });
 }
 
+// ===================== API REST Y GEOLOCALIZACIÓN =====================
+
+function actualizarTextoElemento(id, texto) {
+  const elemento = document.getElementById(id);
+
+  if (elemento) {
+    elemento.textContent = texto;
+  }
+}
+
+function obtenerPosicionActual() {
+  return new Promise(function (resolve, reject) {
+    if (!navigator.geolocation) {
+      reject(new Error("El navegador no permite usar geolocalización."));
+      return;
+    }
+
+    // Solicita permiso al usuario al entrar al Dashboard.
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: false,
+      timeout: 10000,
+      maximumAge: 300000
+    });
+  });
+}
+
+function obtenerDescripcionClima(codigo) {
+  const estados = {
+    0: "Despejado",
+    1: "Mayormente despejado",
+    2: "Parcialmente nublado",
+    3: "Nublado",
+    45: "Niebla",
+    48: "Niebla con escarcha",
+    51: "Llovizna ligera",
+    53: "Llovizna moderada",
+    55: "Llovizna intensa",
+    61: "Lluvia ligera",
+    63: "Lluvia moderada",
+    65: "Lluvia intensa",
+    80: "Chubascos ligeros",
+    81: "Chubascos moderados",
+    82: "Chubascos intensos",
+    95: "Tormenta"
+  };
+
+  return estados[codigo] || "Condición no especificada";
+}
+
+async function consultarClimaActual(latitud, longitud) {
+  const url = "https://api.open-meteo.com/v1/forecast" +
+              "?latitude=" + encodeURIComponent(latitud) +
+              "&longitude=" + encodeURIComponent(longitud) +
+              "&current=temperature_2m,weather_code,wind_speed_10m";
+
+  try {
+    const respuesta = await fetch(url);
+
+    if (!respuesta.ok) {
+      throw new Error("La API respondió con un error.");
+    }
+
+    // Procesa la respuesta JSON entregada por la API REST.
+    const datos = await respuesta.json();
+    const clima = datos.current;
+
+    if (!clima) {
+      throw new Error("La API no devolvió datos de clima actual.");
+    }
+
+    actualizarTextoElemento("temperaturaActual", clima.temperature_2m + " °C");
+    actualizarTextoElemento("estadoClimaActual", obtenerDescripcionClima(clima.weather_code));
+    actualizarTextoElemento("vientoActual", clima.wind_speed_10m + " km/h");
+    actualizarTextoElemento(
+      "climaResumen",
+      clima.temperature_2m + " °C · " +
+      obtenerDescripcionClima(clima.weather_code) +
+      " · Viento " + clima.wind_speed_10m + " km/h"
+    );
+    actualizarTextoElemento("climaEstado", "Datos obtenidos desde Open-Meteo.");
+  } catch (error) {
+    actualizarTextoElemento("temperaturaActual", "No disponible");
+    actualizarTextoElemento("estadoClimaActual", "No disponible");
+    actualizarTextoElemento("vientoActual", "No disponible");
+    actualizarTextoElemento("climaResumen", "Clima no disponible");
+    actualizarTextoElemento("climaEstado", "No fue posible consultar el clima. Revise su conexión a internet.");
+  }
+}
+
+async function cargarContextoDashboard() {
+  try {
+    const posicion = await obtenerPosicionActual();
+    const latitud = posicion.coords.latitude.toFixed(5);
+    const longitud = posicion.coords.longitude.toFixed(5);
+
+    actualizarTextoElemento("latitudActual", latitud);
+    actualizarTextoElemento("longitudActual", longitud);
+    actualizarTextoElemento("ubicacionResumen", "Lat: " + latitud + " / Lon: " + longitud);
+    actualizarTextoElemento("ubicacionEstado", "Ubicación detectada correctamente.");
+
+    await consultarClimaActual(latitud, longitud);
+  } catch (error) {
+    actualizarTextoElemento("latitudActual", "No disponible");
+    actualizarTextoElemento("longitudActual", "No disponible");
+    actualizarTextoElemento("ubicacionResumen", "Ubicación no disponible");
+    actualizarTextoElemento("ubicacionEstado", "No se pudo obtener la ubicación. Puede continuar usando el inventario.");
+    actualizarTextoElemento("climaResumen", "Clima no disponible");
+    actualizarTextoElemento("climaEstado", "El clima requiere permiso de ubicación para consultar las coordenadas.");
+  }
+}
+
 // ===================== LOCAL STORAGE =====================
 
 function cambiarTema() {
@@ -706,6 +817,7 @@ function iniciarVistaInicio() {
   renderUltimosProductos();
   renderGraficoStock();
   renderActividadReciente();
+  cargarContextoDashboard();
   mostrarCookie();
   mostrarSesion();
   configurarBotonesCerrarSesion();
