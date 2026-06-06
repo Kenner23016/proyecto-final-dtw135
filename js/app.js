@@ -460,12 +460,14 @@ function renderGraficoStock() {
 
   contexto.clearRect(0, 0, ancho, alto);
   contexto.font = "14px Arial";
-  contexto.fillStyle = "#666";
+  contexto.fillStyle = "rgba(226, 232, 240, 0.72)";
 
   if (categorias.length === 0) {
-    contexto.fillText("No hay datos suficientes para mostrar el gráfico.", 32, alto / 2);
-    return;
-  }
+  contexto.font = "bold 15px Arial";
+  contexto.fillStyle = "rgba(226, 232, 240, 0.45)";
+  contexto.fillText("No hay datos suficientes para mostrar el gráfico.", 32, alto / 2);
+  return;
+}
 
   const margenIzquierdo = 42;
   const margenInferior = 48;
@@ -477,7 +479,7 @@ function renderGraficoStock() {
   }));
   const anchoBarra = Math.max(32, espacioDisponible / categorias.length - 18);
 
-  contexto.strokeStyle = "#d7dce2";
+  contexto.strokeStyle = "rgba(148, 163, 184, 0.55)";
   contexto.beginPath();
   contexto.moveTo(margenIzquierdo, margenSuperior);
   contexto.lineTo(margenIzquierdo, alto - margenInferior);
@@ -490,16 +492,20 @@ function renderGraficoStock() {
     const x = margenIzquierdo + 18 + indice * (anchoBarra + 18);
     const y = alto - margenInferior - altoBarra;
 
-    contexto.fillStyle = indice % 2 === 0 ? "#183153" : "#244c7c";
-    contexto.fillRect(x, y, anchoBarra, altoBarra);
+    const gradiente = contexto.createLinearGradient(0, y, 0, alto - margenInferior);
+  gradiente.addColorStop(0, indice % 2 === 0 ? "#38bdf8" : "#60a5fa");
+  gradiente.addColorStop(1, indice % 2 === 0 ? "#1d4ed8" : "#0e7490");
 
-    contexto.fillStyle = "#183153";
-    contexto.font = "bold 13px Arial";
-    contexto.fillText(valor, x, y - 8);
+  contexto.fillStyle = gradiente;
+  contexto.fillRect(x, y, anchoBarra, altoBarra);
 
-    contexto.fillStyle = "#666";
-    contexto.font = "12px Arial";
-    contexto.fillText(categoria.slice(0, 12), x, alto - 22);
+  contexto.fillStyle = "rgba(226, 232, 240, 0.92)";
+  contexto.font = "bold 13px Arial";
+  contexto.fillText(valor, x, y - 8);
+
+  contexto.fillStyle = "rgba(203, 213, 225, 0.72)";
+  contexto.font = "bold 12px Arial";
+  contexto.fillText(categoria.slice(0, 12), x, alto - 22);
   });
 }
 

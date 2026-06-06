@@ -3,10 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventario Básico de Productos</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <title>StockFlow — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body data-page="inicio" class="app-layout">
+
+  <!-- Formas decorativas de fondo -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-superior">
@@ -14,22 +22,48 @@
     </div>
 
     <div class="sidebar-branding">
-      <div class="sidebar-marca">
-        <h1>StockFlow</h1>
-        <p>Sistema de Gestión de Inventario</p>
+      <div class="sidebar-brand-row">
+        <div class="sidebar-logo">
+          <img src="assets/img/stockFlowLis.png" alt="Logo StockFlow">
+        </div>
+        <div class="sidebar-marca">
+          <h1>StockFlow</h1>
+        </div>
       </div>
     </div>
 
     <nav class="menu-principal">
-      <a href="index.html" class="activo">Home</a>
-      <a href="pages/producto-form.html">Nuevo producto</a>
-      <a href="pages/productos.html">Productos</a>
+      <a href="index.html" class="activo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="nav-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        Home
+      </a>
+      <a href="pages/producto-form.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="nav-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        Nuevo producto
+      </a>
+      <a href="pages/productos.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="nav-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/>
+        </svg>
+        Productos
+      </a>
     </nav>
 
-    <button type="button" class="cerrar-sesion-btn sidebar-logout">Cerrar sesión</button>
+    <button type="button" class="cerrar-sesion-btn sidebar-logout">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:6px">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+      Cerrar sesión
+    </button>
   </aside>
 
   <main class="contenedor dashboard">
+
     <section class="dashboard-header">
       <div>
         <span class="etiqueta">Panel administrativo</span>
@@ -40,9 +74,31 @@
       <div class="estado-sistema-card">
         <h3>Estado del sistema</h3>
         <div class="estado-sistema-lista">
-          <p><span>👤</span> Usuario activo: <strong id="nombreEncargado">No registrado</strong></p>
-          <p><span>📍</span> Ubicación: <strong id="ubicacionResumen">Solicitando permiso...</strong></p>
-          <p><span>🌤️</span> Clima: <strong id="climaResumen">Esperando coordenadas...</strong></p>
+          <p>
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:4px">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </span>
+            Usuario activo: <strong id="nombreEncargado">No registrado</strong>
+          </p>
+          <p>
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:4px">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </span>
+            Ubicación: <strong id="ubicacionResumen">Solicitando permiso...</strong>
+          </p>
+          <p>
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:4px">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+              </svg>
+            </span>
+            Clima: <strong id="climaResumen">Esperando coordenadas...</strong>
+          </p>
         </div>
         <p id="estadoSesion" class="texto-ayuda">Sesión cerrada</p>
         <p id="ubicacionEstado" class="texto-ayuda dato-oculto">Pendiente</p>
@@ -57,7 +113,12 @@
 
     <section class="resumen-grid metricas-grid">
       <article class="tarjeta-resumen metrica-card">
-        <span class="metrica-icono">#</span>
+        <span class="metrica-icono">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/>
+          </svg>
+        </span>
         <div>
           <p>Productos registrados</p>
           <strong id="totalProductos">0</strong>
@@ -65,7 +126,11 @@
       </article>
 
       <article class="tarjeta-resumen metrica-card">
-        <span class="metrica-icono">+</span>
+        <span class="metrica-icono">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/>
+          </svg>
+        </span>
         <div>
           <p>Unidades en stock</p>
           <strong id="totalUnidades">0</strong>
@@ -73,7 +138,11 @@
       </article>
 
       <article class="tarjeta-resumen metrica-card">
-        <span class="metrica-icono">$</span>
+        <span class="metrica-icono">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </span>
         <div>
           <p>Valor estimado</p>
           <strong id="valorInventario">$0.00</strong>
@@ -94,7 +163,7 @@
         </div>
       </article>
 
-      <article class="tarjeta dashboard-card">
+      <article class="tarjeta dashboard-card actividad-card">
         <div class="encabezado-seccion compacto">
           <div>
             <h2>Actividad reciente</h2>
@@ -126,6 +195,7 @@
         </table>
       </div>
     </section>
+
   </main>
 
   <script src="js/app.js"></script>
