@@ -40,7 +40,7 @@ const app = {
 
     this.productos.push(producto);
     this.guardarProductos();
-    sessionStorage.setItem("ultimaAccion", "Producto agregado");
+    sessionStorage.setItem("ultimaAccion", "Producto agregado: " + nombre);
   },
 
   actualizarProducto: function (id, codigo, nombre, categoria, cantidad, precio) {
@@ -57,16 +57,23 @@ const app = {
     });
 
     this.guardarProductos();
-    sessionStorage.setItem("ultimaAccion", "Producto actualizado");
+    sessionStorage.setItem("ultimaAccion", "Producto actualizado: " + nombre);
   },
 
   eliminarProducto: function (id) {
+    const productoEliminado = this.buscarProducto(id);
+
     this.productos = this.productos.filter(function (producto) {
       return producto.id !== id;
     });
 
     this.guardarProductos();
-    sessionStorage.setItem("ultimaAccion", "Producto eliminado");
+
+    if (productoEliminado) {
+      sessionStorage.setItem("ultimaAccion", "Producto eliminado: " + productoEliminado.nombre);
+    } else {
+      sessionStorage.setItem("ultimaAccion", "Producto eliminado");
+    }
   },
 
   buscarProducto: function (id) {
@@ -111,7 +118,7 @@ const usuarioSimulado = {
   nombre: "Administrador"
 };
 
-// ===================== FUNCIONES DE PRODUCTOS =====================
+//FUNCIONES DE PRODUCTOS 
 
 function validarProducto(codigo, nombre, categoria, cantidad, precio, idActual) {
   if (!codigo.trim()) {
@@ -170,6 +177,132 @@ function obtenerClaseEstado(cantidad) {
 
   return "";
 }
+
+//NOTIFICACIONES TEMPORALES 
+
+function crearContenedorNotificaciones() {
+  let contenedor = document.getElementById("toastContainer");
+
+  if (!contenedor) {
+    contenedor = document.createElement("div");
+    contenedor.id = "toastContainer";
+    contenedor.classList.add("toast-container");
+    document.body.appendChild(contenedor);
+  }
+
+  return contenedor;
+}
+
+function mostrarNotificacion(texto, tipo) {
+  const contenedor = crearContenedorNotificaciones();
+  const notificacion = document.createElement("div");
+  const titulo = document.createElement("strong");
+  const mensaje = document.createElement("p");
+
+  notificacion.classList.add("toast");
+
+  if (tipo) {
+    notificacion.classList.add("toast-" + tipo);
+  }
+
+  titulo.textContent = tipo === "error" ? "Atención" : "Operación exitosa";
+  mensaje.textContent = texto;
+
+  notificacion.appendChild(titulo);
+  notificacion.appendChild(mensaje);
+  contenedor.appendChild(notificacion);
+
+  setTimeout(function () {
+    notificacion.classList.add("toast-saliendo");
+
+    setTimeout(function () {
+      notificacion.remove();
+    }, 300);
+  }, 6500);
+}
+
+function guardarNotificacionPendiente(texto, tipo) {
+  const datos = {
+    texto: texto,
+    tipo: tipo || "success"
+  };
+
+  sessionStorage.setItem("notificacionPendiente", JSON.stringify(datos));
+}
+
+function procesarNotificacionPendiente() {
+  const datosGuardados = sessionStorage.getItem("notificacionPendiente");
+
+  if (!datosGuardados) {
+    return;
+  }
+
+  try {
+    const datos = JSON.parse(datosGuardados);
+    mostrarNotificacion(datos.texto, datos.tipo);
+  } catch (error) {
+    mostrarNotificacion("Se realizó una acción en el sistema.", "success");
+  }
+
+  sessionStorage.removeItem("notificacionPendiente");
+}
+
+function mostrarConfirmacionPersonalizada(titulo, mensaje) {
+  return new Promise(function (resolve) {
+    const overlay = document.createElement("div");
+
+    overlay.classList.add("modal-confirmacion-overlay");
+
+    overlay.innerHTML = `
+      <div class="modal-confirmacion">
+        <div class="modal-confirmacion-icono">!</div>
+
+        <div class="modal-confirmacion-contenido">
+          <h3>${titulo}</h3>
+          <p>${mensaje}</p>
+        </div>
+
+        <div class="modal-confirmacion-acciones">
+          <button type="button" class="modal-btn modal-btn-secundario" id="cancelarEliminacionBtn">
+            Cancelar
+          </button>
+          <button type="button" class="modal-btn modal-btn-peligro" id="confirmarEliminacionBtn">
+            Eliminar producto
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const cancelarBtn = document.getElementById("cancelarEliminacionBtn");
+    const confirmarBtn = document.getElementById("confirmarEliminacionBtn");
+
+    function cerrar(resultado) {
+      overlay.classList.add("modal-confirmacion-saliendo");
+
+      setTimeout(function () {
+        overlay.remove();
+        resolve(resultado);
+      }, 200);
+    }
+
+    cancelarBtn.addEventListener("click", function () {
+      cerrar(false);
+    });
+
+    confirmarBtn.addEventListener("click", function () {
+      cerrar(true);
+    });
+
+    overlay.addEventListener("click", function (evento) {
+      if (evento.target === overlay) {
+        cerrar(false);
+      }
+    });
+  });
+}
+
 
 function mostrarMensajeFormulario(texto) {
   const mensaje = document.getElementById("mensajeFormulario");
@@ -232,8 +365,10 @@ function guardarDesdeFormulario(evento) {
   if (idEditando) {
     app.actualizarProducto(idEditando, codigo, nombre, categoria, cantidad, precio);
     sessionStorage.removeItem("productoEditando");
+    guardarNotificacionPendiente("Producto actualizado correctamente.", "success");
   } else {
     app.agregarProducto(codigo, nombre, categoria, cantidad, precio);
+    guardarNotificacionPendiente("Producto agregado correctamente.", "success");
   }
 
   window.location.href = "productos.html";
@@ -374,7 +509,7 @@ function renderResumen() {
   }
 }
 
-// ===================== COOKIES =====================
+// COOKIES 
 
 function guardarCookie() {
   const usuario = document.getElementById("usuarioInput").value;
@@ -463,11 +598,11 @@ function renderGraficoStock() {
   contexto.fillStyle = "rgba(226, 232, 240, 0.72)";
 
   if (categorias.length === 0) {
-  contexto.font = "bold 15px Arial";
-  contexto.fillStyle = "rgba(226, 232, 240, 0.45)";
-  contexto.fillText("No hay datos suficientes para mostrar el gráfico.", 32, alto / 2);
-  return;
-}
+    contexto.font = "bold 15px Arial";
+    contexto.fillStyle = "rgba(226, 232, 240, 0.45)";
+    contexto.fillText("No hay datos suficientes para mostrar el gráfico.", 32, alto / 2);
+    return;
+  }
 
   const margenIzquierdo = 42;
   const margenInferior = 48;
@@ -493,19 +628,19 @@ function renderGraficoStock() {
     const y = alto - margenInferior - altoBarra;
 
     const gradiente = contexto.createLinearGradient(0, y, 0, alto - margenInferior);
-  gradiente.addColorStop(0, indice % 2 === 0 ? "#38bdf8" : "#60a5fa");
-  gradiente.addColorStop(1, indice % 2 === 0 ? "#1d4ed8" : "#0e7490");
+    gradiente.addColorStop(0, indice % 2 === 0 ? "#38bdf8" : "#60a5fa");
+    gradiente.addColorStop(1, indice % 2 === 0 ? "#1d4ed8" : "#0e7490");
 
-  contexto.fillStyle = gradiente;
-  contexto.fillRect(x, y, anchoBarra, altoBarra);
+    contexto.fillStyle = gradiente;
+    contexto.fillRect(x, y, anchoBarra, altoBarra);
 
-  contexto.fillStyle = "rgba(226, 232, 240, 0.92)";
-  contexto.font = "bold 13px Arial";
-  contexto.fillText(valor, x, y - 8);
+    contexto.fillStyle = "rgba(226, 232, 240, 0.92)";
+    contexto.font = "bold 13px Arial";
+    contexto.fillText(valor, x, y - 8);
 
-  contexto.fillStyle = "rgba(203, 213, 225, 0.72)";
-  contexto.font = "bold 12px Arial";
-  contexto.fillText(categoria.slice(0, 12), x, alto - 22);
+    contexto.fillStyle = "rgba(203, 213, 225, 0.72)";
+    contexto.font = "bold 12px Arial";
+    contexto.fillText(categoria.slice(0, 12), x, alto - 22);
   });
 }
 
@@ -553,7 +688,7 @@ function renderActividadReciente() {
   });
 }
 
-// ===================== API REST Y GEOLOCALIZACIÓN =====================
+//API REST Y GEOLOCALIZACIÓN
 
 function actualizarTextoElemento(id, texto) {
   const elemento = document.getElementById(id);
@@ -570,7 +705,6 @@ function obtenerPosicionActual() {
       return;
     }
 
-    // Solicita permiso al usuario al entrar al Dashboard.
     navigator.geolocation.getCurrentPosition(resolve, reject, {
       enableHighAccuracy: false,
       timeout: 10000,
@@ -615,7 +749,6 @@ async function consultarClimaActual(latitud, longitud) {
       throw new Error("La API respondió con un error.");
     }
 
-    // Procesa la respuesta JSON entregada por la API REST.
     const datos = await respuesta.json();
     const clima = datos.current;
 
@@ -664,7 +797,7 @@ async function cargarContextoDashboard() {
   }
 }
 
-// ===================== LOCAL STORAGE =====================
+//LOCAL STORAGE
 
 function cambiarTema() {
   const tema = localStorage.getItem("tema");
@@ -686,7 +819,7 @@ function cargarTema() {
   }
 }
 
-// ===================== SESSION STORAGE =====================
+//SESSION STORAGE
 
 function sesionActiva() {
   return sessionStorage.getItem("sesion") === "activa";
@@ -811,7 +944,67 @@ function mostrarUltimaAccion() {
   }
 }
 
-// ===================== EVENTOS POR VISTA =====================
+// ADMINISTRACIÓN 
+function renderActividadAdministrativa(ultimaAccion, productosBajoStock) {
+  const contenedor = document.getElementById("adminActividad");
+
+  if (!contenedor) {
+    return;
+  }
+
+  contenedor.textContent = "";
+
+  const actividades = [
+    {
+      titulo: "Última acción",
+      texto: ultimaAccion
+    },
+    {
+      titulo: "Control de stock",
+      texto: productosBajoStock + " producto(s) con stock bajo o agotado"
+    },
+    {
+      titulo: "Almacenamiento local",
+      texto: "Los datos del inventario se conservan en localStorage"
+    }
+  ];
+
+  actividades.forEach(function (actividad) {
+    const item = document.createElement("div");
+    const titulo = document.createElement("strong");
+    const texto = document.createElement("p");
+
+    item.classList.add("actividad-item");
+    titulo.textContent = actividad.titulo;
+    texto.textContent = actividad.texto;
+
+    item.appendChild(titulo);
+    item.appendChild(texto);
+    contenedor.appendChild(item);
+  });
+}
+
+function renderAdministracion() {
+  const usuarioActivo = sessionStorage.getItem("usuarioActivo") || obtenerCookie("usuario") || "No registrado";
+  const productosBajoStock = app.productos.filter(function (producto) {
+    return producto.cantidad <= 5;
+  }).length;
+
+  const datosProductos = localStorage.getItem("productos") || "[]";
+  const ultimaAccion = sessionStorage.getItem("ultimaAccion") || "Sin acciones recientes";
+
+  actualizarTextoElemento("adminTotalProductos", app.productos.length);
+  actualizarTextoElemento("adminTotalUnidades", app.calcularTotalUnidades());
+  actualizarTextoElemento("adminValorInventario", "$" + app.calcularValorInventario().toFixed(2));
+  actualizarTextoElemento("adminStockBajo", productosBajoStock);
+  actualizarTextoElemento("adminUsuarioActivo", usuarioActivo);
+  actualizarTextoElemento("adminEstadoSesion", sesionActiva() ? "Sesión activa" : "Sesión cerrada");
+  actualizarTextoElemento("adminStorageInfo", "localStorage activo · " + datosProductos.length + " caracteres utilizados");
+
+  renderActividadAdministrativa(ultimaAccion, productosBajoStock);
+}
+
+//EVENTOS POR VISTA
 
 function iniciarVistaLogin() {
   document.getElementById("formLogin").addEventListener("submit", validarLogin);
@@ -835,26 +1028,35 @@ function iniciarVistaProductos() {
 
   document.getElementById("buscarProducto").addEventListener("input", filtrarProductos);
 
-  // Delegación de eventos en la tabla de productos.
-  document.getElementById("tablaProductos").addEventListener("click", function (evento) {
-    const id = Number(evento.target.dataset.id);
+  document.getElementById("tablaProductos").addEventListener("click", async function (evento) {
+  const boton = evento.target.closest("button");
 
-    if (evento.target.classList.contains("editar")) {
-      sessionStorage.setItem("productoEditando", id);
-      window.location.href = "producto-form.html";
+  if (!boton) {
+    return;
+  }
+
+  const id = Number(boton.dataset.id);
+
+  if (boton.classList.contains("editar")) {
+    sessionStorage.setItem("productoEditando", id);
+    window.location.href = "producto-form.html";
+  }
+
+  if (boton.classList.contains("eliminar")) {
+    const confirmar = await mostrarConfirmacionPersonalizada(
+      "Eliminar producto",
+      "Esta acción eliminará el producto del inventario. No podrás recuperarlo después."
+    );
+
+    if (!confirmar) {
+      return;
     }
 
-    if (evento.target.classList.contains("eliminar")) {
-      const confirmar = confirm("¿Desea eliminar este producto?");
-
-      if (!confirmar) {
-        return;
-      }
-
-      app.eliminarProducto(id);
-      renderTablaProductos(app.productos);
-    }
-  });
+    app.eliminarProducto(id);
+    renderTablaProductos(app.productos);
+    mostrarNotificacion("Producto eliminado correctamente.", "success");
+  }
+});
 }
 
 function iniciarVistaFormulario() {
@@ -870,6 +1072,12 @@ function iniciarVistaFormulario() {
   });
 }
 
+function iniciarVistaAdministracion() {
+  configurarBotonesCerrarSesion();
+  mostrarSesion();
+  renderAdministracion();
+}
+
 function iniciarVistaSesion() {
   mostrarCookie();
   mostrarSesion();
@@ -881,7 +1089,7 @@ function iniciarVistaSesion() {
   document.getElementById("temaBtn").addEventListener("click", cambiarTema);
 }
 
-// ===================== INICIALIZACIÓN =====================
+//INICIALIZACIÓN 
 
 window.onload = function () {
   cargarTema();
@@ -894,6 +1102,7 @@ window.onload = function () {
 
   app.cargarProductos();
   configurarSidebar();
+  procesarNotificacionPendiente();
 
   if (pagina === "login") {
     iniciarVistaLogin();
@@ -909,6 +1118,10 @@ window.onload = function () {
 
   if (pagina === "formulario-producto") {
     iniciarVistaFormulario();
+  }
+
+  if (pagina === "administracion") {
+    iniciarVistaAdministracion();
   }
 
   if (pagina === "sesion") {

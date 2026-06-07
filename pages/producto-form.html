@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StockFlow — Nuevo Producto</title>
+  <title>StockFlow</title>
+  <link rel="icon" type="image/png" href="../assets/img/stockFlowLis.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,18 +40,28 @@
         </svg>
         Home
       </a>
+
       <a href="producto-form.html" class="activo">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="nav-icon">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
         Nuevo producto
       </a>
+
       <a href="productos.html">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="nav-icon">
           <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
           <path stroke-linecap="round" stroke-linejoin="round" d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/>
         </svg>
         Productos
+      </a>
+
+      <a href="administracion.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="nav-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        Administración
       </a>
     </nav>
 
@@ -64,81 +75,104 @@
 
   <main class="contenedor contenedor-formulario">
 
-    <div class="form-page-header">
+    <section class="form-page-header">
       <span class="etiqueta">Gestión de inventario</span>
       <h2 id="tituloFormulario">Nuevo producto</h2>
-      <p>Complete la información solicitada. Los datos se guardan en localStorage.</p>
-    </div>
+      <p>
+        Registre productos con código, categoría, cantidad y precio unitario. 
+        La información se guardará localmente en el navegador.
+      </p>
+    </section>
 
-    <section class="tarjeta dashboard-card form-card">
+    <section class="formulario-layout">
 
-      <div class="form-section-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/>
-        </svg>
-        Información del producto
-      </div>
-
-      <form id="formProducto">
-        <div class="form-grid">
-          <div class="campo">
-            <label for="codigoInput">Código</label>
-            <input type="text" id="codigoInput" placeholder="Ejemplo: P001">
+      <section class="tarjeta dashboard-card form-card">
+        <div class="form-card-header">
+          <div>
+            <span class="form-icon"></span>
           </div>
 
-          <div class="campo">
-            <label for="productoInput">Nombre del producto</label>
-            <input type="text" id="productoInput" placeholder="Ejemplo: Cuaderno universitario">
-            <p class="contador" style="margin-top: 6px">Caracteres: <span id="contador">0</span></p>
-          </div>
-
-          <div class="campo">
-            <label for="categoriaInput">Categoría</label>
-            <select id="categoriaInput">
-              <option value="">Seleccione una categoría</option>
-              <option value="Alimentos">Alimentos</option>
-              <option value="Limpieza">Limpieza</option>
-              <option value="Tecnología">Tecnología</option>
-              <option value="Papelería">Papelería</option>
-              <option value="Otros">Otros</option>
-            </select>
-          </div>
-
-          <div class="campo">
-            <label for="cantidadInput">Cantidad</label>
-            <input type="number" id="cantidadInput" placeholder="Ejemplo: 10" min="0">
-          </div>
-
-          <div class="campo">
-            <label for="precioInput">Precio unitario</label>
-            <input type="number" id="precioInput" placeholder="Ejemplo: 1.50" min="0" step="0.01">
+          <div>
+            <h3>Información del producto</h3>
+            <p>Complete los datos requeridos para agregar el producto al inventario.</p>
           </div>
         </div>
 
-        <p id="mensajeFormulario" class="mensaje"></p>
+        <form id="formProducto">
+          <div class="form-grid">
+            <div class="campo">
+              <label for="codigoInput">Código</label>
+              <input type="text" id="codigoInput">
+            </div>
 
-        <div class="acciones-formulario" style="margin-top: 24px">
-          <button type="submit" id="guardarProductoBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:6px">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-            </svg>
-            Guardar producto
-          </button>
-          <button type="button" id="limpiarBtn" class="secundario">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:6px">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
-            Limpiar
-          </button>
-          <a href="productos.html" class="boton secundario">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:6px">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Volver al listado
-          </a>
+            <div class="campo">
+              <label for="productoInput">Nombre del producto</label>
+              <input type="text" id="productoInput">
+              <p class="contador">Caracteres: <span id="contador">0</span></p>
+            </div>
+
+            <div class="campo">
+              <label for="categoriaInput">Categoría</label>
+              <select id="categoriaInput">
+                <option value="">Seleccione una categoría</option>
+                <option value="Alimentos">Alimentos</option>
+                <option value="Limpieza">Limpieza</option>
+                <option value="Tecnología">Tecnología</option>
+                <option value="Papelería">Papelería</option>
+                <option value="Otros">Otros</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="cantidadInput">Cantidad</label>
+              <input type="number" id="cantidadInput" min="0">
+            </div>
+
+            <div class="campo">
+              <label for="precioInput">Precio unitario</label>
+              <input type="number" id="precioInput" min="0" step="0.01">
+            </div>
+          </div>
+
+          <p id="mensajeFormulario" class="mensaje"></p>
+
+          <div class="acciones-formulario">
+            <button type="submit" id="guardarProductoBtn">Guardar producto</button>
+            <button type="button" id="limpiarBtn" class="secundario">Limpiar</button>
+            <a href="productos.html" class="boton claro">Volver al listado</a>
+          </div>
+        </form>
+      </section>
+
+      <aside class="tarjeta dashboard-card form-helper-card">
+        <span class="etiqueta">Registro rápido</span>
+
+        <h3>Recomendaciones</h3>
+
+        <div class="helper-list">
+          <div class="helper-item">
+            <strong>Código único</strong>
+            <p>Use códigos breves como CAF001, LIM002 o TEC003.</p>
+          </div>
+
+          <div class="helper-item">
+            <strong>Categoría correcta</strong>
+            <p>Clasifique el producto para que el dashboard muestre mejores métricas.</p>
+          </div>
+
+          <div class="helper-item">
+            <strong>Precio y cantidad</strong>
+            <p>Estos datos calculan el valor estimado del inventario.</p>
+          </div>
         </div>
-      </form>
+
+        <div class="helper-summary">
+          <span>StockFlow</span>
+          <strong>Inventario básico</strong>
+          <p>Los productos se almacenan con localStorage.</p>
+        </div>
+      </aside>
+
     </section>
   </main>
 
