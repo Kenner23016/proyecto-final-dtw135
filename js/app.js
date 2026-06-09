@@ -1002,6 +1002,62 @@ function renderAdministracion() {
   actualizarTextoElemento("adminStorageInfo", "localStorage activo · " + datosProductos.length + " caracteres utilizados");
 
   renderActividadAdministrativa(ultimaAccion, productosBajoStock);
+
+  const btn=document.getElementById("ejecutarAuditoria");
+  if(btn && !btn.dataset.worker){btn.dataset.worker="1";btn.addEventListener("click", ejecutarAuditoriaWorker);}
+}
+
+
+function ejecutarAuditoriaWorker() {
+  const estado=document.getElementById("workerEstado");
+  const resultado=document.getElementById("workerResultado");
+  const fecha=document.getElementById("workerFecha");
+  const barra=document.getElementById("workerBarra");
+  const progreso=document.getElementById("workerProgreso");
+  if(!estado) return;
+
+  estado.textContent="Auditoría en progreso...";
+  resultado.textContent="";
+  if(fecha) fecha.textContent="";
+  let valor=0;
+  if(barra) barra.style.width="0%";
+  if(progreso) progreso.textContent="0%";
+
+  const timer=setInterval(()=>{
+    valor+=25;
+    if(valor<=100){
+      if(barra) barra.style.width=valor+"%";
+      if(progreso) progreso.textContent=valor+"%";
+    }
+  },500);
+
+  const worker=new Worker("../workers/auditoriaWorker.js");
+  worker.postMessage(app.productos);
+
+  worker.onmessage=function(e){
+    clearInterval(timer);
+    if(barra) barra.style.width="100%";
+    if(progreso) progreso.textContent="100%";
+    estado.textContent="✓ Auditoría completada mediante Web Worker";
+
+    const rec=e.data.recomendaciones.length
+      ? e.data.recomendaciones.map(r=>`- ${r.nombre} (${r.stock} unidades)`).join(" | ")
+      : "No hay productos para reabastecer";
+
+    resultado.innerHTML=
+      `Productos analizados: ${e.data.totalProductos}<br>`+
+      `Stock bajo: ${e.data.stockBajo}<br>`+
+      `Sin categoría: ${e.data.sinCategoria}<br>`+
+      `Categorías registradas: ${e.data.categoriasRegistradas}<br><br>`+
+      `<strong>Producto más caro:</strong> ${e.data.productoMasCaro?.nombre || 'N/A'} ($${e.data.productoMasCaro?.precio || 0})<br>`+
+      `<strong>Producto más barato:</strong> ${e.data.productoMasBarato?.nombre || 'N/A'} ($${e.data.productoMasBarato?.precio || 0})<br>`+
+      `<strong>Producto con mayor stock:</strong> ${e.data.productoMayorStock?.nombre || 'N/A'} (${e.data.productoMayorStock?.cantidad || 0} unidades)<br>`+
+      `<strong>Producto con menor stock:</strong> ${e.data.productoMenorStock?.nombre || 'N/A'} (${e.data.productoMenorStock?.cantidad || 0} unidades)<br><br>`+
+      `<strong>Recomendación automática de compra:</strong><br>${rec}`;
+
+    if(fecha) fecha.innerHTML=`<strong>Última auditoría:</strong> ${e.data.fecha}`;
+    worker.terminate();
+  };
 }
 
 //EVENTOS POR VISTA
@@ -1128,3 +1184,46 @@ window.onload = function () {
     iniciarVistaSesion();
   }
 };
+
+document.addEventListener("click", function(e){
+  if(e.target && e.target.id==="exportarCsv"){
+    exportarInventarioCSV();
+  }
+});
+
+function exportarInventarioCSV(){
+  const productos = JSON.parse(
+    localStorage.getItem("productos") || "[]"
+  );
+
+  if(!productos.length){
+    alert("No hay productos para exportar.");
+    return;
+  }
+
+  const encabezados=["codigo","nombre","categoria","cantidad","precio"];
+
+  let csv=encabezados.join(",")+"\n";
+
+  productos.forEach(p=>{
+    csv += encabezados
+      .map(h => `"${(p[h] ?? "").toString().replace(/"/g,'""')}"`)
+      .join(",") + "\n";
+  });
+
+  const blob=new Blob([csv],{
+    type:"text/csv;charset=utf-8;"
+  });
+
+  const url=URL.createObjectURL(blob);
+
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="inventario.csv";
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}

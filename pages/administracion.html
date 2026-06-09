@@ -111,6 +111,20 @@
       <div id="adminActividad" class="actividad-lista"></div>
     </section>
 
+  
+    <section class="tarjeta dashboard-card admin-card" style="padding:25px;">
+      <h3>Auditoria de productos</h3>
+      <p id="workerEstado">Worker inactivo</p>
+      <div style="width:100%;background:#ddd;border-radius:10px;height:18px;margin:10px 0;">
+        <div id="workerBarra" style="width:0%;height:100%;border-radius:8px;background:#4caf50;transition:width .3s;"></div>
+      </div>
+      <p id="workerProgreso" style="margin:10px 0; font-size:18px; font-weight:bold;"></p>
+<p id="workerResultado" style="margin:15px 0; font-size:18px;"></p>
+<p id="workerFecha" style="margin:15px 0; font-size:18px; color:#666;"></p>
+      <button type="button" class="boton" id="ejecutarAuditoria">Ejecutar Auditoría</button>
+    </section>
+
+
   </main>
 
   <script src="../js/app.js"></script>
