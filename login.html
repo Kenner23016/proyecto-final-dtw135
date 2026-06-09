@@ -3,32 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Inventario Básico</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <title>Login - StockFlow</title>
+  <link rel="stylesheet" href="css/login.css">
 </head>
+
 <body data-page="login">
 
-  <main class="contenedor-login">
-    <section class="tarjeta login-tarjeta">
-      <span class="etiqueta">Sistema de inventario</span>
-      <h1>Iniciar sesión</h1>
-      <p class="texto-ayuda">Ingrese sus credenciales para acceder al inventario.</p>
+  <div class="login-background">
+    <video class="login-video" autoplay muted loop playsinline>
+      <source src="assets/video/stockflow-bg.mp4" type="video/mp4">
+    </video>
 
-      <form id="formLogin">
-        <div class="campo">
-          <label for="loginUsuario">Usuario</label>
-          <input type="text" id="loginUsuario" placeholder="Ejemplo: admin">
+    <div class="login-overlay"></div>
+  </div>
+
+  <main class="login-page">
+    <section class="login-shell">
+
+      <article class="login-brand-panel">
+
+        <img  
+          src="assets/img/stockFlowL.png"
+          alt="Logo de StockFlow"
+          class="login-logo"
+        >
+
+        <p class="login-frase">
+          Controla tus productos de forma simple, rápida y organizada.
+        </p>
+
+        <div class="login-beneficios">
+          <span>CRUD de productos</span>
+          <span>Dashboard visual</span>
+          <span>Gestión local</span>
+        </div>
+      </article>
+
+      <section class="login-form-panel">
+        <div class="login-form-header">
+          <h2>Iniciar sesión</h2>
+          <p>Ingrese sus credenciales para acceder al panel de inventario.</p>
         </div>
 
-        <div class="campo">
-          <label for="loginClave">Contraseña</label>
-          <input type="password" id="loginClave" placeholder="Ejemplo: 1234">
-        </div>
+        <form id="formLogin" class="login-form">
+          <div class="campo login-campo">
+            <label for="loginUsuario">Usuario</label>
+            <input 
+              type="text" 
+              id="loginUsuario" 
+              placeholder=""
+              autocomplete="username"
+            >
+          </div>
 
-        <p id="mensajeLogin" class="mensaje"></p>
+          <div class="campo login-campo">
+            <label for="loginClave">Contraseña</label>
+            <input 
+              type="password" 
+              id="loginClave" 
+              placeholder=""
+              autocomplete="current-password"
+            >
+          </div>
 
-        <button type="submit">Entrar</button>
-      </form>
+          <p id="mensajeLogin" class="mensaje login-mensaje"></p>
+
+          <button type="submit" class="login-submit">
+            Ingresar
+          </button>
+        </form>
+
+      </section>
+
     </section>
   </main>
 
