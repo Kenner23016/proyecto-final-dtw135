@@ -206,7 +206,7 @@ https://github.com/Kenner23016/proyecto-final-dtw135.git
 ## Enlace de despliegue
 
 **Servidor gratuito:**  
-[Agregar enlace del proyecto desplegado]
+https://proyecto-final-dtw135.pages.dev/login
 
 ## Estado del proyecto
 
